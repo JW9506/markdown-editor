@@ -21,6 +21,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "lint": "eslint . --ext ts,tsx",
+    "build:tailwind": "tailwind build src/styles/_tailwind.css -o src/styles/tailwind.css",
     "eject": "react-scripts eject"
   },
   "browserslist": {
