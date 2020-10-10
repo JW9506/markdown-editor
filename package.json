@@ -1,9 +1,18 @@
 {
   "name": "electron-01",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
-  "dependencies": {
-    "electron": "7.1.7"
+  "main": "src/js-out/main",
+  "scripts": {
+    "start:tsc": "tsc -w",
+    "start:main": "electron .",
+    "start": "concurrently -k \"yarn:start:*\""
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "concurrently": "^5.2.0",
+    "electron": "7.1.7",
+    "nodemon": "^2.0.4",
+    "typescript": "^3.9.5"
   }
 }
