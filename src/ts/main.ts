@@ -1,5 +1,7 @@
 import { app, BrowserWindow, ipcMain, Notification } from 'electron'
 import path from 'path'
+import isDev from 'electron-is-dev'
+const REACT_PORT = 3123
 
 let win: BrowserWindow
 app.on('ready', () => {
@@ -10,7 +12,12 @@ app.on('ready', () => {
       nodeIntegration: true,
     },
   })
-  win.loadFile(path.resolve(__dirname, '../index.html'))
+  if (isDev) {
+    win.loadURL(`http://localhost:${REACT_PORT}`)
+  } else {
+    // win.loadFile(path.resolve(__dirname, 'index.html'))
+  }
+
   handleIPC()
 })
 

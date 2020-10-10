@@ -5,7 +5,8 @@
   "main": "src/js-out/main",
   "scripts": {
     "start:tsc": "tsc -w",
-    "start:main": "electron .",
+    "start:render": "cd ./src/react-src && yarn start",
+    "start:main": "wait-on http://localhost:3123 && electron .",
     "start": "concurrently -k \"yarn:start:*\""
   },
   "dependencies": {},
@@ -13,7 +14,9 @@
     "concurrently": "^5.2.0",
     "devtron": "^1.4.0",
     "electron": "7.1.7",
+    "electron-is-dev": "^1.2.0",
     "nodemon": "^2.0.4",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.5",
+    "wait-on": "^5.2.0"
   }
 }
