@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export interface FileSearchProps {
   title: string
@@ -37,22 +38,22 @@ const FileSearch: React.FC<FileSearchProps> = ({ title, onFileSearch }) => {
   }, [inputActive])
 
   return (
-    <div className="FileSearch alert alert-primary">
+    <div className="FileSearch alert alert-primary d-flex justify-content-between align-items-center h-16">
       {!inputActive && (
-        <div className="d-flex justify-content-between align-items-center">
+        <>
           <span>{title}</span>
           <button
             type="button"
-            className="btn btn-primary"
+            className="focus:outline-none"
             onClick={() => setInputActive(true)}
           >
-            Search
+            <FontAwesomeIcon icon="search" size="lg" />
           </button>
-        </div>
+        </>
       )}
       {inputActive && (
-        <div className="row">
-          <div className="col-8">
+        <>
+          <div className="w-75">
             <input
               ref={inputRef}
               className="form-control"
@@ -62,12 +63,12 @@ const FileSearch: React.FC<FileSearchProps> = ({ title, onFileSearch }) => {
           </div>
           <button
             type="button"
-            className="col-4 btn btn-primary"
+            className="focus:outline-none"
             onClick={() => closeSearch()}
           >
-            Close
+            <FontAwesomeIcon icon="window-close" size="lg" />
           </button>
-        </div>
+        </>
       )}
     </div>
   )

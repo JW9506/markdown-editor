@@ -3,7 +3,7 @@ import FileSearch from './components/FileSearch'
 
 function App() {
   return (
-    <div className="container-fluid">
+    <div className="container-fluid min-h-screen bg-gray-300">
       <div className="row">
         <div className="col-3 bg-danger left-panel">
           <FileSearch
