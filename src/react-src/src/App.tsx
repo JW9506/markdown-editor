@@ -6,7 +6,12 @@ function App() {
     <div className="container-fluid">
       <div className="row">
         <div className="col-3 bg-danger left-panel">
-          <FileSearch title="My Cloud Doc" onFileSearch={() => {}} />
+          <FileSearch
+            title="My Cloud Doc"
+            onFileSearch={(value) => {
+              console.log(value)
+            }}
+          />
         </div>
         <div className="col-9 bg-primary right-panel">
           <h1>this is the right</h1>

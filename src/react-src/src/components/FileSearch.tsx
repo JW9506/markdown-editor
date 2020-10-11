@@ -1,13 +1,32 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 export interface FileSearchProps {
   title: string
-  onFileSearch: () => void
+  onFileSearch: (value: string) => void
 }
 
 const FileSearch: React.FC<FileSearchProps> = ({ title, onFileSearch }) => {
   const [inputActive, setInputActive] = useState(false)
   const [value, setValue] = useState('')
+  const closeSearch = (e?: KeyboardEvent) => {
+    e?.preventDefault()
+    setInputActive(false)
+    setValue('')
+  }
+  useEffect(() => {
+    const handleInputEvent = (event: KeyboardEvent) => {
+      const { key } = event
+      if (key === 'Enter' && inputActive) {
+        onFileSearch(value)
+      } else if (key === 'Escape' && inputActive) {
+        closeSearch()
+      }
+    }
+    document.addEventListener('keyup', handleInputEvent)
+    return () => {
+      document.removeEventListener('keyup', handleInputEvent)
+    }
+  }, [value, inputActive])
   return (
     <div className="FileSearch alert alert-primary">
       {!inputActive && (
@@ -36,9 +55,7 @@ const FileSearch: React.FC<FileSearchProps> = ({ title, onFileSearch }) => {
           <button
             type="button"
             className="col-4 btn btn-primary"
-            onClick={() => {
-              setInputActive(false)
-            }}
+            onClick={() => closeSearch()}
           >
             Close
           </button>
