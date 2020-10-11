@@ -3,11 +3,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMarkdown } from '@fortawesome/free-brands-svg-icons'
 import { FileObject } from '../typings'
 
+type FileAction = (id: string) => void
 export interface FileListProps {
   files: FileObject[]
-  onFileClick: (id: string) => void
-  onFileEdit: (id: string) => void
-  onFileDelete: (id: string) => void
+  onFileClick: FileAction
+  onFileEdit: FileAction
+  onFileDelete: FileAction
 }
 
 const FileList: React.FC<FileListProps> = ({
@@ -16,24 +17,18 @@ const FileList: React.FC<FileListProps> = ({
   onFileEdit,
   onFileDelete,
 }) => {
-  const _onFileClick = (id: string) => (e: React.MouseEvent) => {
+  const onClickCb = (func: FileAction, ...args: Parameters<FileAction>) => (
+    e: React.MouseEvent
+  ) => {
     e.stopPropagation()
-    onFileClick(id)
-  }
-  const _onFileDelete = (id: string) => (e: React.MouseEvent) => {
-    e.stopPropagation()
-    onFileDelete(id)
-  }
-  const _onFileEdit = (id: string) => (e: React.MouseEvent) => {
-    e.stopPropagation()
-    onFileEdit(id)
+    func(...args)
   }
   return (
     <ul className="FileList list-group-flush p-0">
       {files.map((file) => (
         <li
           key={file.id}
-          onClick={_onFileClick(file.id)}
+          onClick={onClickCb(onFileClick, file.id)}
           className="FileItem list-group-item list-group-item-action list-group-item-primary row d-flex align-items-center cursor-pointer"
         >
           <span className="col-2">
@@ -41,10 +36,10 @@ const FileList: React.FC<FileListProps> = ({
           </span>
           <span className="col-8">{file.title}</span>
           <span className="col-2">
-            <button onClick={_onFileEdit(file.id)}>
+            <button onClick={onClickCb(onFileEdit, file.id)}>
               <FontAwesomeIcon title="edit" icon="edit" size="lg" />
             </button>
-            <button onClick={_onFileDelete(file.id)}>
+            <button onClick={onClickCb(onFileDelete, file.id)}>
               <FontAwesomeIcon title="trash" icon="trash" size="lg" />
             </button>
           </span>
