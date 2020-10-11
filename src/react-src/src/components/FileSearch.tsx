@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useKeyPress } from '../hooks/useKeyPress'
 
 export interface FileSearchProps {
   title: string
@@ -10,26 +11,22 @@ const FileSearch: React.FC<FileSearchProps> = ({ title, onFileSearch }) => {
   const [inputActive, setInputActive] = useState(false)
   const [value, setValue] = useState('')
   const inputRef = useRef<HTMLInputElement | null>(null)
-  const closeSearch = (e?: KeyboardEvent) => {
-    e?.preventDefault()
+  const enterPressed = useKeyPress('Enter')
+  const escapedPressed = useKeyPress('Escape')
+  const closeSearch = () => {
     setInputActive(false)
     setValue('')
   }
 
   useEffect(() => {
-    const handleInputEvent = (event: KeyboardEvent) => {
-      const { key } = event
-      if (key === 'Enter' && inputActive) {
-        onFileSearch(value)
-      } else if (key === 'Escape' && inputActive) {
-        closeSearch()
-      }
+    if (!inputActive) return
+    if (enterPressed) {
+      onFileSearch(value)
     }
-    document.addEventListener('keyup', handleInputEvent)
-    return () => {
-      document.removeEventListener('keyup', handleInputEvent)
+    if (escapedPressed) {
+      closeSearch()
     }
-  }, [value, inputActive, onFileSearch])
+  }, [value, inputActive, enterPressed, escapedPressed])
 
   useEffect(() => {
     if (inputActive) {
