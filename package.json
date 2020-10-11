@@ -4,6 +4,7 @@
   "license": "MIT",
   "main": "src/js-out/main",
   "scripts": {
+    "lint": "eslint . --ext js,jsx,ts,tsx",
     "start:tsc": "tsc -w",
     "start:render": "cd ./src/react-src && yarn start",
     "start:main": "wait-on http://localhost:3123 && electron .",
