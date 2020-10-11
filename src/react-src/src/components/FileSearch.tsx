@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 
 export interface FileSearchProps {
   title: string
@@ -8,11 +8,13 @@ export interface FileSearchProps {
 const FileSearch: React.FC<FileSearchProps> = ({ title, onFileSearch }) => {
   const [inputActive, setInputActive] = useState(false)
   const [value, setValue] = useState('')
+  const inputRef = useRef<HTMLInputElement | null>(null)
   const closeSearch = (e?: KeyboardEvent) => {
     e?.preventDefault()
     setInputActive(false)
     setValue('')
   }
+
   useEffect(() => {
     const handleInputEvent = (event: KeyboardEvent) => {
       const { key } = event
@@ -27,6 +29,13 @@ const FileSearch: React.FC<FileSearchProps> = ({ title, onFileSearch }) => {
       document.removeEventListener('keyup', handleInputEvent)
     }
   }, [value, inputActive])
+
+  useEffect(() => {
+    if (inputActive) {
+      inputRef.current?.focus()
+    }
+  }, [inputActive])
+
   return (
     <div className="FileSearch alert alert-primary">
       {!inputActive && (
@@ -35,9 +44,7 @@ const FileSearch: React.FC<FileSearchProps> = ({ title, onFileSearch }) => {
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() => {
-              setInputActive(true)
-            }}
+            onClick={() => setInputActive(true)}
           >
             Search
           </button>
@@ -47,6 +54,7 @@ const FileSearch: React.FC<FileSearchProps> = ({ title, onFileSearch }) => {
         <div className="row">
           <div className="col-8">
             <input
+              ref={inputRef}
               className="form-control"
               value={value}
               onChange={(e) => setValue(e.target.value)}
