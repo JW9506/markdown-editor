@@ -4,6 +4,15 @@ import FileSearch from './components/FileSearch'
 import defaultFiles from './utils/defaultFiles'
 
 function App() {
+  const fileClick = (id: string) => {
+    console.log('fileClick', id)
+  }
+  const fileDelete = (id: string) => {
+    console.log('fileDelete', id)
+  }
+  const fileEdit = (id: string) => {
+    console.log('fileEdit', id)
+  }
   return (
     <div className="container-fluid min-h-screen bg-gray-300">
       <div className="row">
@@ -14,7 +23,12 @@ function App() {
               console.log(value)
             }}
           />
-          <FileList files={defaultFiles} />
+          <FileList
+            files={defaultFiles}
+            onFileClick={fileClick}
+            onFileEdit={fileEdit}
+            onFileDelete={fileDelete}
+          />
         </div>
         <div className="col-9 bg-primary right-panel">
           <h1>this is the right</h1>

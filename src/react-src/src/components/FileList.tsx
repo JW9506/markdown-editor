@@ -5,22 +5,35 @@ import { FileObject } from '../typings'
 
 export interface FileListProps {
   files: FileObject[]
-  onFileClick: any
-  onSaveEdit: any
-  onFileDelete: any
+  onFileClick: (id: string) => void
+  onFileEdit: (id: string) => void
+  onFileDelete: (id: string) => void
 }
 
 const FileList: React.FC<FileListProps> = ({
   files,
   onFileClick,
-  onSaveEdit,
+  onFileEdit,
   onFileDelete,
 }) => {
+  const _onFileClick = (id: string) => (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onFileClick(id)
+  }
+  const _onFileDelete = (id: string) => (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onFileDelete(id)
+  }
+  const _onFileEdit = (id: string) => (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onFileEdit(id)
+  }
   return (
     <ul className="FileList list-group-flush p-0">
       {files.map((file) => (
         <li
           key={file.id}
+          onClick={_onFileClick(file.id)}
           className="FileItem list-group-item list-group-item-action list-group-item-primary row d-flex align-items-center cursor-pointer"
         >
           <span className="col-2">
@@ -28,10 +41,10 @@ const FileList: React.FC<FileListProps> = ({
           </span>
           <span className="col-8">{file.title}</span>
           <span className="col-2">
-            <button>
+            <button onClick={_onFileEdit(file.id)}>
               <FontAwesomeIcon title="edit" icon="edit" size="lg" />
             </button>
-            <button>
+            <button onClick={_onFileDelete(file.id)}>
               <FontAwesomeIcon title="trash" icon="trash" size="lg" />
             </button>
           </span>
