@@ -10,8 +10,8 @@ function App() {
   const fileDelete = (id: string) => {
     console.log('fileDelete', id)
   }
-  const fileEdit = (id: string) => {
-    console.log('fileEdit', id)
+  const fileNameSave = (title: string) => {
+    console.log('fileNameSave', title)
   }
   return (
     <div className="container-fluid min-h-screen bg-gray-300">
@@ -26,7 +26,7 @@ function App() {
           <FileList
             files={defaultFiles}
             onFileClick={fileClick}
-            onFileEdit={fileEdit}
+            onFileNameSave={fileNameSave}
             onFileDelete={fileDelete}
           />
         </div>

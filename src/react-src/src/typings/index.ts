@@ -4,3 +4,5 @@ export interface FileObject {
   body: string
   createdAt: number
 }
+
+export type AnyFunction<T = any, R = void> = (...args: T[]) => R
