@@ -29,7 +29,7 @@ const FileSearch: React.FC<FileSearchProps> = ({ title, onFileSearch }) => {
     return () => {
       document.removeEventListener('keyup', handleInputEvent)
     }
-  }, [value, inputActive])
+  }, [value, inputActive, onFileSearch])
 
   useEffect(() => {
     if (inputActive) {
