@@ -5,4 +5,4 @@ export interface FileObject {
   createdAt: number
 }
 
-export type AnyFunction<T = any, R = void> = (...args: T[]) => R
+export type AnyFunction<T extends any[] = any[], R = void> = (...args: T) => R

@@ -7,6 +7,7 @@ type FileObjectAction = (file: FileObject) => void
 export interface FileListProps {
   files: FileObject[]
   onFileClick: AnyFunction
+  // onFileNameSave: AnyFunction<[id: string, title: string]>
   onFileNameSave: AnyFunction
   onFileDelete: AnyFunction
 }
@@ -50,7 +51,7 @@ const FileList: React.FC<FileListProps> = ({
     const handleInputEvent = (event: KeyboardEvent) => {
       const { key } = event
       if (key === 'Enter' && editStatus) {
-        onFileNameSave(value)
+        onFileNameSave(editStatus, value)
         exitFileNameEdit()
       } else if (key === 'Escape' && editStatus) {
         exitFileNameEdit()

@@ -10,8 +10,8 @@ function App() {
   const fileDelete = (id: string) => {
     console.log('fileDelete', id)
   }
-  const fileNameSave = (title: string) => {
-    console.log('fileNameSave', title)
+  const fileNameSave = (id: string, title: string) => {
+    console.log('fileNameSave', id, title)
   }
   return (
     <div className="container-fluid min-h-screen bg-gray-300">
