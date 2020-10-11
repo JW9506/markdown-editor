@@ -4,9 +4,14 @@ import App from './App'
 import './styles/tailwind.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faWindowClose, faSearch } from '@fortawesome/free-solid-svg-icons'
+import {
+  faWindowClose,
+  faSearch,
+  faEdit,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons'
 
-library.add(faWindowClose, faSearch)
+library.add(faWindowClose, faSearch, faEdit, faTrash)
 
 ReactDOM.render(
   <React.StrictMode>
