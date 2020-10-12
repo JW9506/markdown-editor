@@ -114,7 +114,7 @@ module.exports = (_, { mode = 'production' }) => {
     devServer: {
       compress: true,
       hot: true,
-      contentBase: path.resolve(__dirname, 'public'),
+      contentBase: path.resolve(__dirname, 'src'),
       historyApiFallback: true,
     },
     performance: {
