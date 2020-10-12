@@ -1,12 +1,13 @@
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
+import { AnyFunction } from '../typings'
 
 interface BottomBtnProps {
-  text: any
-  colorClass: any
+  colorClass: string
   icon: IconProp
-  onBtnClick: any
+  text?: string
+  onBtnClick?: AnyFunction
 }
 const BottomBtn: React.FC<BottomBtnProps> = ({
   text,
