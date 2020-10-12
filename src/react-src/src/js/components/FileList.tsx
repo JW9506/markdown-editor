@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMarkdown } from '@fortawesome/free-brands-svg-icons'
 import { AnyFunction, FileObject } from '../typings'
+import { useKeyPress } from '../hooks/useKeyPress'
 
 type FileObjectAction = (file: FileObject) => void
 export interface FileListProps {
@@ -17,22 +18,24 @@ const FileList: React.FC<FileListProps> = ({
   onFileNameSave,
   onFileDelete,
 }) => {
-  const [editStatus, setEditStatus] = useState('')
+  const [currentEditId, setCurrentEditId] = useState('')
   const [value, setValue] = useState('')
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const enterPressed = useKeyPress('Enter')
+  const escapePressed = useKeyPress('Escape')
   const _onFileClick = (file: FileObject) => {
-    if (editStatus !== file.id) {
+    if (currentEditId !== file.id) {
       onFileClick(file.id)
     }
   }
   const fileEdit = (file: FileObject) => {
-    if (editStatus !== file.id) {
-      setEditStatus(file.id)
+    if (currentEditId !== file.id) {
+      setCurrentEditId(file.id)
       setValue(file.title)
     }
   }
   const exitFileNameEdit = useCallback(() => {
-    setEditStatus('')
+    setCurrentEditId('')
   }, [])
   const onClickCb = <T extends AnyFunction = FileObjectAction>(
     func: T,
@@ -42,25 +45,26 @@ const FileList: React.FC<FileListProps> = ({
     func(...args)
   }
   useEffect(() => {
-    if (editStatus) {
+    if (currentEditId) {
       inputRef.current?.focus()
     }
-  }, [editStatus])
+  }, [currentEditId])
   useEffect(() => {
-    const handleInputEvent = (event: KeyboardEvent) => {
-      const { key } = event
-      if (key === 'Enter' && editStatus) {
-        onFileNameSave(editStatus, value)
-        exitFileNameEdit()
-      } else if (key === 'Escape' && editStatus) {
-        exitFileNameEdit()
-      }
+    if (!currentEditId) return
+    if (enterPressed) {
+      onFileNameSave(currentEditId, value)
+      exitFileNameEdit()
+    } else if (escapePressed) {
+      exitFileNameEdit()
     }
-    document.addEventListener('keyup', handleInputEvent)
-    return () => {
-      document.removeEventListener('keyup', handleInputEvent)
-    }
-  }, [value, editStatus, exitFileNameEdit, onFileNameSave])
+  }, [
+    value,
+    currentEditId,
+    exitFileNameEdit,
+    onFileNameSave,
+    enterPressed,
+    escapePressed,
+  ])
   return (
     <ul className="FileList list-group-flush p-0">
       {files.map((file) => (
@@ -69,7 +73,7 @@ const FileList: React.FC<FileListProps> = ({
           onClick={onClickCb(_onFileClick, file)}
           className="FileItem list-group-item list-group-item-action list-group-item-primary row d-flex align-items-center cursor-pointer h-16"
         >
-          {editStatus !== file.id && (
+          {currentEditId !== file.id && (
             <>
               <span className="col-2">
                 <FontAwesomeIcon icon={faMarkdown} size="lg" />
@@ -91,7 +95,7 @@ const FileList: React.FC<FileListProps> = ({
               </span>
             </>
           )}
-          {editStatus === file.id && (
+          {currentEditId === file.id && (
             <>
               <span className="col-10">
                 <input
