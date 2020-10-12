@@ -1,3 +1,4 @@
+import { hot } from 'react-hot-loader/root'
 import React from 'react'
 import FileList from './components/FileList'
 import FileSearch from './components/FileSearch'
@@ -38,4 +39,4 @@ function App() {
   )
 }
 
-export default App
+export default hot(App)
