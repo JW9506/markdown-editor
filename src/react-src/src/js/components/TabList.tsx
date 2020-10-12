@@ -11,6 +11,7 @@ interface TabListProps {
   unsaveIds?: string[]
   onTabClick: AnyFunction<[id: string], void>
   onCloseTab: AnyFunction<[id: string], void>
+  className?: string
 }
 
 const TabList: React.FC<TabListProps> = ({
@@ -19,10 +20,11 @@ const TabList: React.FC<TabListProps> = ({
   unsaveIds,
   onTabClick,
   onCloseTab,
+  className,
 }) => {
   unsaveIds ??= []
   return (
-    <ul className="TabList nav nav-pills">
+    <ul className={`TabList nav nav-pills ${className}`}>
       {files.map((file) => {
         const withUnsavedMark = unsaveIds?.includes(file.id) ?? false
         const xClsx = clsx({

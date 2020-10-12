@@ -4,10 +4,15 @@ import { useKeyPress } from '../hooks/useKeyPress'
 
 export interface FileSearchProps {
   title: string
+  className?: string
   onFileSearch: (value: string) => void
 }
 
-const FileSearch: React.FC<FileSearchProps> = ({ title, onFileSearch }) => {
+const FileSearch: React.FC<FileSearchProps> = ({
+  title,
+  onFileSearch,
+  className,
+}) => {
   const [inputActive, setInputActive] = useState(false)
   const [value, setValue] = useState('')
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -35,7 +40,9 @@ const FileSearch: React.FC<FileSearchProps> = ({ title, onFileSearch }) => {
   }, [inputActive])
 
   return (
-    <div className="FileSearch alert alert-primary d-flex justify-content-between align-items-center h-16 mb-0">
+    <div
+      className={`FileSearch alert alert-primary d-flex justify-content-between align-items-center h-16 mb-0 ${className}`}
+    >
       {!inputActive && (
         <>
           <span>{title}</span>

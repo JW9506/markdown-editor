@@ -10,6 +10,7 @@ export interface FileListProps {
   onFileClick: AnyFunction
   onFileNameSave: AnyFunction<[id: string, title: string]>
   onFileDelete: AnyFunction
+  className?: string
 }
 
 const FileList: React.FC<FileListProps> = ({
@@ -17,6 +18,7 @@ const FileList: React.FC<FileListProps> = ({
   onFileClick,
   onFileNameSave,
   onFileDelete,
+  className,
 }) => {
   const [currentEditId, setCurrentEditId] = useState('')
   const [value, setValue] = useState('')
@@ -66,7 +68,7 @@ const FileList: React.FC<FileListProps> = ({
     escapePressed,
   ])
   return (
-    <ul className="FileList list-group-flush p-0 mb-0">
+    <ul className={`FileList list-group-flush p-0 mb-0 ${className}`}>
       {files.map((file) => (
         <li
           key={file.id}

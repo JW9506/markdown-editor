@@ -1,8 +1,6 @@
-* {
-  margin: 0;
-  padding: 0;
+.EasyMDEContainer {
+  height: 100%;
 }
-
-body {
-  background: $primaryBG;
+.CodeMirror {
+  height: calc(100% - 49px - 34px);
 }
