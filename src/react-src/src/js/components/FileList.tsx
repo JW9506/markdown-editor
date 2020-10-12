@@ -7,8 +7,7 @@ type FileObjectAction = (file: FileObject) => void
 export interface FileListProps {
   files: FileObject[]
   onFileClick: AnyFunction
-  // onFileNameSave: AnyFunction<[id: string, title: string]>
-  onFileNameSave: AnyFunction
+  onFileNameSave: AnyFunction<[id: string, title: string]>
   onFileDelete: AnyFunction
 }
 
