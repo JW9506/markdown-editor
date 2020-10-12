@@ -1,5 +1,4 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ESLintPlugin = require('eslint-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
@@ -95,7 +94,6 @@ module.exports = (_, { mode = 'production' }) => {
       },
     },
     plugins: [
-      new ESLintPlugin(),
       // new ForkTsCheckerWebpackPlugin(),
       new HtmlWebpackPlugin({
         template: './src/index.html',
