@@ -1,5 +1,5 @@
 {
-  "name": "electron-01",
+  "name": "markdown-editor",
   "version": "1.0.0",
   "license": "MIT",
   "main": "src/js-out/main",
@@ -7,7 +7,7 @@
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "start:tsc": "tsc -w",
     "start:render": "cd ./src/react-src && yarn start",
-    "start:main": "wait-on http://localhost:3123 && electron .",
+    "start:main": "wait-on -i 1000 http://localhost:3123 && electron .",
     "start": "concurrently -k \"yarn:start:*\""
   },
   "dependencies": {},

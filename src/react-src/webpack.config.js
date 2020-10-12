@@ -7,7 +7,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const webpack = require('webpack')
 const path = require('path')
 const publicURLRoot = '/'
-const SPATitle = 'Demo'
+const SPATitle = require('../../package.json')['name']
 
 module.exports = (_, { mode = 'production' }) => {
   const isProduction = mode === 'production'
