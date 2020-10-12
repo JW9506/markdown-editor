@@ -66,12 +66,12 @@ const FileList: React.FC<FileListProps> = ({
     escapePressed,
   ])
   return (
-    <ul className="FileList list-group-flush p-0">
+    <ul className="FileList list-group-flush p-0 mb-0">
       {files.map((file) => (
         <li
           key={file.id}
           onClick={onClickCb(_onFileClick, file)}
-          className="FileItem list-group-item list-group-item-action list-group-item-primary row d-flex align-items-center cursor-pointer h-16"
+          className="FileItem list-group-item list-group-item-action list-group-item-primary d-flex justify-content-between align-items-center cursor-pointer h-16"
         >
           {currentEditId !== file.id && (
             <>
@@ -105,7 +105,7 @@ const FileList: React.FC<FileListProps> = ({
                   onChange={(e) => setValue(e.target.value)}
                 />
               </span>
-              <span className="col-2">
+              <span>
                 <button
                   type="button"
                   className="focus:outline-none"

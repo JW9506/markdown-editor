@@ -8,10 +8,12 @@ import {
   faWindowClose,
   faSearch,
   faEdit,
+  faPlus,
+  faFileImport,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faWindowClose, faSearch, faEdit, faTrash)
+library.add(faWindowClose, faSearch, faEdit, faTrash, faPlus, faFileImport)
 
 ReactDOM.render(
   <React.StrictMode>
