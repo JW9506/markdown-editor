@@ -26,7 +26,7 @@ const FileSearch: React.FC<FileSearchProps> = ({ title, onFileSearch }) => {
     if (escapedPressed) {
       closeSearch()
     }
-  }, [value, inputActive, enterPressed, escapedPressed])
+  }, [value, inputActive, enterPressed, escapedPressed, onFileSearch])
 
   useEffect(() => {
     if (inputActive) {
