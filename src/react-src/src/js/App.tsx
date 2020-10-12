@@ -4,6 +4,7 @@ import FileList from './components/FileList'
 import FileSearch from './components/FileSearch'
 import defaultFiles from './utils/defaultFiles'
 import BottomBtn from './components/BottomBtn'
+import TabList from './components/TabList'
 
 function App() {
   const fileClick = (id: string) => {
@@ -16,7 +17,7 @@ function App() {
     console.log('fileNameSave', id, title)
   }
   return (
-    <div className="container-fluid min-h-screen bg-gray-300 px-0">
+    <div className="container-fluid min-h-screen bg-gray-400 px-0">
       <div className="row g-0">
         <div className="col-3 left-panel">
           <FileSearch
@@ -44,8 +45,14 @@ function App() {
             </div>
           </div>
         </div>
-        <div className="col-9 bg-primary right-panel">
-          <h1>this is the right</h1>
+        <div className="col-9 right-panel">
+          <TabList
+            files={defaultFiles}
+            unsaveIds={['1', '2', '3']}
+            onTabClick={(id) => console.log('tab click', id)}
+            onCloseTab={(id) => console.log('close tab', id)}
+            activeId="1"
+          />
         </div>
       </div>
     </div>
