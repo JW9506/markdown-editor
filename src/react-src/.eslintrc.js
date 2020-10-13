@@ -4,7 +4,9 @@ module.exports = {
       files: ['*.ts', '*.tsx'],
       parser: '@typescript-eslint/parser',
       extends: ['plugin:react-hooks/recommended'],
-      rules: {},
+      rules: {
+        'react-hooks/exhaustive-deps': 'off',
+      },
     },
   ],
 }
