@@ -18,6 +18,7 @@ const FileSearch: React.FC<FileSearchProps> = ({
   const inputRef = useRef<HTMLInputElement | null>(null)
   const enterPressed = useKeyPress('Enter')
   const escapedPressed = useKeyPress('Escape')
+  const forwardSlashPressed = useKeyPress('/')
   const closeSearch = () => {
     setInputActive(false)
     setValue('')
@@ -25,14 +26,23 @@ const FileSearch: React.FC<FileSearchProps> = ({
   }
 
   useEffect(() => {
-    if (!inputActive) return
-    if (enterPressed) {
+    if (enterPressed && inputActive) {
       onFileSearch(value)
     }
-    if (escapedPressed) {
+    if (escapedPressed && inputActive) {
       closeSearch()
     }
-  }, [value, inputActive, enterPressed, escapedPressed, onFileSearch])
+    if (forwardSlashPressed) {
+      setInputActive(true)
+    }
+  }, [
+    value,
+    inputActive,
+    enterPressed,
+    escapedPressed,
+    forwardSlashPressed,
+    onFileSearch,
+  ])
 
   useEffect(() => {
     if (inputActive) {
