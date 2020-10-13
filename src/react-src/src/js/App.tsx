@@ -11,37 +11,39 @@ import TabList from './components/TabList'
 import '../css/main.scss'
 import { ensure } from './utils/ensure'
 import { FileObject } from './typings'
+import {
+  flattenedFileObjectCollectionToArr,
+  flattenFileObjectCollection,
+} from './utils/helper'
 
 function App() {
-  const [files, setFiles] = useState(defaultFiles)
+  const [files, setFiles] = useState(flattenFileObjectCollection(defaultFiles))
   const [activeFileID, setActiveFileID] = useState('')
   const [openedFileIDs, setOpenedFileIDs] = useState<string[]>([])
   const [searchedFiles, setSearchedFiles] = useState<FileObject[]>([])
   const [unsavedFileIDs, setUnsavedFileIDs] = useState<string[]>([])
+  const fileObjArr = flattenedFileObjectCollectionToArr(files)
   const createNewFile = () => {
     const newID = uuid()
-    const newFiles: FileObject[] = [
-      ...files,
-      {
-        id: newID,
-        title: '',
-        body: '## default body',
-        createdAt: Date.now(),
-        isNew: true,
-      },
-    ]
-    setFiles(newFiles)
+    files[newID] = {
+      id: newID,
+      title: '',
+      body: '## default body',
+      createdAt: Date.now(),
+      isNew: true,
+    }
+    setFiles({ ...files })
   }
   const openedFiles = openedFileIDs.map((id) => {
-    let file = files.find((file) => file.id === id)
+    let file = files[id]
     file = ensure(file, 'Opened File Ids contain Ids that are not valid')
     return file
   })
-  const activeFile = files.find((file) => file.id === activeFileID)
+  const activeFile = files[activeFileID]
   const fileSearch = (keyWord: string) => {
     if (!keyWord) setSearchedFiles([])
     else {
-      const newFiles = files.filter((file) => file.title.includes(keyWord))
+      const newFiles = fileObjArr.filter((file) => file.title.includes(keyWord))
       setSearchedFiles(newFiles)
     }
   }
@@ -76,8 +78,8 @@ function App() {
     }
   }
   const fileDelete = (fileId: string) => {
-    const newFiles = files.filter((file) => file.id !== fileId)
-    setFiles(newFiles)
+    delete files[fileId]
+    setFiles({ ...files })
     // close the tab if opened
     tabClose(fileId)
   }
@@ -89,18 +91,20 @@ function App() {
     keys: K[],
     values: V[]
   ): void => {
-    const newFiles = files.map((file) => {
-      if (file.id === fileId) {
-        let key: K, val: V
-        for (let i = 0; i < keys.length; i++) {
-          key = keys[i]
-          val = values[i]
-          file[key] = val
-        }
-      }
-      return file
-    })
-    setFiles(newFiles)
+    if (keys.length !== values.length) {
+      throw new Error(
+        'updateFileObjectField error, keys length must equal to values length'
+      )
+    }
+    const file = files[fileId]
+    let key: K, val: V
+    for (let i = 0; i < keys.length; i++) {
+      key = keys[i]
+      val = values[i]
+      file[key] = val
+    }
+
+    setFiles({ ...files, [fileId]: file })
   }
   return (
     <div className="App container-fluid min-h-screen px-0">
@@ -113,7 +117,7 @@ function App() {
           />
           <FileList
             className="flex-1"
-            files={searchedFiles.length ? searchedFiles : files}
+            files={searchedFiles.length ? searchedFiles : fileObjArr}
             onFileClick={fileClick}
             onFileNameSave={(id, title) =>
               updateFileObjectField(id, ['title', 'isNew'], [title, false])
