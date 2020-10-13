@@ -10,10 +10,7 @@ import TabList from './components/TabList'
 import '../css/main.scss'
 import { ensure } from './utils/ensure'
 import { FileObject } from './typings'
-import {
-  flattenedFileObjectCollectionToArr,
-  flattenFileObjectCollection,
-} from './utils/helper'
+import { flattenedFileObjectCollectionToArr } from './utils/helper'
 import { deleteFile, readFile, renameFile, writeFile } from './utils/fileHelper'
 import path from 'path'
 import { remote } from 'electron'
@@ -46,11 +43,13 @@ function App() {
   const [unsavedFileIDs, setUnsavedFileIDs] = useState<string[]>([])
   const fileObjArr = flattenedFileObjectCollectionToArr(files)
   const activeFile = files[activeFileID]
+
   const saveLocation = path.join(
     remote.app.getPath('home'),
     '_tempfiles',
     'electron_md_notepad_cache'
   )
+
   const saveCurrentFile = async () => {
     try {
       await writeFile(
@@ -62,6 +61,7 @@ function App() {
       console.error(e)
     }
   }
+
   const createNewFile = () => {
     const newID = uuid()
     files[newID] = {
@@ -74,11 +74,13 @@ function App() {
     }
     setFiles({ ...files })
   }
+
   const openedFiles = openedFileIDs.map((id) => {
     let file = files[id]
     file = ensure(file, 'Opened File Ids contain Ids that are not valid')
     return file
   })
+
   const fileNameSave = async (id: string, title: string, isNew?: boolean) => {
     const keys: Array<keyof FileObject> = ['title']
     const values: any[] = [title]
@@ -103,6 +105,7 @@ function App() {
       }
     }
   }
+
   const fileSearch = (keyWord: string) => {
     if (!keyWord) setSearchedFiles([])
     else {
@@ -110,6 +113,7 @@ function App() {
       setSearchedFiles(newFiles)
     }
   }
+
   const fileClick = async (fileId: string) => {
     // set current active file
     setActiveFileID(fileId)
@@ -128,9 +132,11 @@ function App() {
       setOpenedFileIDs([...openedFileIDs, fileId])
     }
   }
+
   const tabClick = (fileId: string) => {
     setActiveFileID(fileId)
   }
+
   const tabClose = (fileId: string) => {
     let nextActive = 0
     const newTabList = openedFileIDs.filter((id, idx) => {
@@ -142,6 +148,7 @@ function App() {
     setOpenedFileIDs(newTabList)
     setActiveFileID(newTabList[nextActive] ?? '')
   }
+
   const fileChange = (fileId: string, value: string) => {
     updateFileObjectField(fileId, ['body'], [value])
 
@@ -149,6 +156,7 @@ function App() {
       setUnsavedFileIDs([...unsavedFileIDs, fileId])
     }
   }
+
   const fileDelete = async (fileId: string) => {
     try {
       await deleteFile(path.join(saveLocation, `${files[fileId].title}.md`))
@@ -162,6 +170,7 @@ function App() {
       console.error(e)
     }
   }
+
   const updateFileObjectField = <
     K extends keyof FileObject,
     V extends FileObject[K]
@@ -186,6 +195,7 @@ function App() {
     setFiles(newFiles)
     saveFilesToStore(newFiles)
   }
+
   return (
     <div className="App container-fluid min-h-screen px-0">
       <div className="row g-0">
