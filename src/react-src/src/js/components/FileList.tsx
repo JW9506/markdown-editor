@@ -70,6 +70,7 @@ const FileList: React.FC<FileListProps> = ({
     const renamingFile = files.find((file) => file.id === currentEditId)
     if (enterPressed && value.trim()) {
       onFileNameSave(currentEditId, value, renamingFile?.isNew)
+      if (renamingFile?.isNew) renamingFile.isNew = false
       exitFileNameEdit(renamingFile)
     } else if (escapePressed) {
       exitFileNameEdit(renamingFile)

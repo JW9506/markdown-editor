@@ -12,6 +12,7 @@ import {
   faFileImport,
   faTimes,
   faTrash,
+  faSave,
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
@@ -21,7 +22,8 @@ library.add(
   faTrash,
   faPlus,
   faFileImport,
-  faTimes
+  faTimes,
+  faSave
 )
 
 ReactDOM.render(

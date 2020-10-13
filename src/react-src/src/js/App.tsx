@@ -15,7 +15,7 @@ import {
   flattenedFileObjectCollectionToArr,
   flattenFileObjectCollection,
 } from './utils/helper'
-import { renameFile, writeFile } from './utils/fileHelper'
+import { deleteFile, renameFile, writeFile } from './utils/fileHelper'
 import path from 'path'
 import { remote } from 'electron'
 
@@ -26,11 +26,23 @@ function App() {
   const [searchedFiles, setSearchedFiles] = useState<FileObject[]>([])
   const [unsavedFileIDs, setUnsavedFileIDs] = useState<string[]>([])
   const fileObjArr = flattenedFileObjectCollectionToArr(files)
+  const activeFile = files[activeFileID]
   const saveLocation = path.join(
     remote.app.getPath('home'),
     '_tempfiles',
     'electron_md_notepad_cache'
   )
+  const saveCurrentFile = async () => {
+    try {
+      await writeFile(
+        path.join(saveLocation, `${activeFile.title}.md`),
+        activeFile.body
+      )
+      setUnsavedFileIDs(unsavedFileIDs.filter((id) => id !== activeFile.id))
+    } catch (e) {
+      console.error(e)
+    }
+  }
   const createNewFile = () => {
     const newID = uuid()
     files[newID] = {
@@ -47,7 +59,6 @@ function App() {
     file = ensure(file, 'Opened File Ids contain Ids that are not valid')
     return file
   })
-  const activeFile = files[activeFileID]
   const fileNameSave = async (id: string, title: string, isNew?: boolean) => {
     const keys: Array<keyof FileObject> = ['title']
     const values: any[] = [title]
@@ -109,11 +120,16 @@ function App() {
       setUnsavedFileIDs([...unsavedFileIDs, fileId])
     }
   }
-  const fileDelete = (fileId: string) => {
-    delete files[fileId]
-    setFiles({ ...files })
-    // close the tab if opened
-    tabClose(fileId)
+  const fileDelete = async (fileId: string) => {
+    try {
+      await deleteFile(path.join(saveLocation, `${files[fileId].title}.md`))
+      delete files[fileId]
+      setFiles({ ...files })
+      // close the tab if opened
+      tabClose(fileId)
+    } catch (e) {
+      console.error(e)
+    }
   }
   const updateFileObjectField = <
     K extends keyof FileObject,
@@ -162,11 +178,19 @@ function App() {
                 onBtnClick={createNewFile}
               />
             </div>
-            <div className="col-6">
+            <div className="col-3">
               <BottomBtn
                 text="Import"
                 colorClass="btn-success"
                 icon="file-import"
+              />
+            </div>
+            <div className="col-3">
+              <BottomBtn
+                text="Save"
+                colorClass="btn-success"
+                onBtnClick={saveCurrentFile}
+                icon="save"
               />
             </div>
           </div>
