@@ -27,6 +27,7 @@ function App() {
         title: '',
         body: '## default body',
         createdAt: Date.now(),
+        isNew: true,
       },
     ]
     setFiles(newFiles)
@@ -38,8 +39,11 @@ function App() {
   })
   const activeFile = files.find((file) => file.id === activeFileID)
   const fileSearch = (keyWord: string) => {
-    const newFiles = files.filter((file) => file.title.includes(keyWord))
-    setSearchedFiles(newFiles)
+    if (!keyWord) setSearchedFiles([])
+    else {
+      const newFiles = files.filter((file) => file.title.includes(keyWord))
+      setSearchedFiles(newFiles)
+    }
   }
   const fileClick = (fileId: string) => {
     // set current active file
@@ -65,7 +69,7 @@ function App() {
     setActiveFileID(newTabList[nextActive] ?? '')
   }
   const fileChange = (fileId: string, value: string) => {
-    updateFileObjectField(fileId, 'body', value)
+    updateFileObjectField(fileId, ['body'], [value])
 
     if (!unsavedFileIDs.includes(fileId)) {
       setUnsavedFileIDs([...unsavedFileIDs, fileId])
@@ -82,12 +86,17 @@ function App() {
     V extends FileObject[K]
   >(
     fileId: string,
-    key: K,
-    val: V
+    keys: K[],
+    values: V[]
   ): void => {
     const newFiles = files.map((file) => {
       if (file.id === fileId) {
-        file[key] = val
+        let key: K, val: V
+        for (let i = 0; i < keys.length; i++) {
+          key = keys[i]
+          val = values[i]
+          file[key] = val
+        }
       }
       return file
     })
@@ -107,7 +116,7 @@ function App() {
             files={searchedFiles.length ? searchedFiles : files}
             onFileClick={fileClick}
             onFileNameSave={(id, title) =>
-              updateFileObjectField(id, 'title', title)
+              updateFileObjectField(id, ['title', 'isNew'], [title, false])
             }
             onFileDelete={fileDelete}
           />

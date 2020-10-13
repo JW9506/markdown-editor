@@ -9,7 +9,7 @@ export interface FileListProps {
   files: FileObject[]
   onFileClick: AnyFunction
   onFileNameSave: AnyFunction<[id: string, title: string]>
-  onFileDelete: AnyFunction
+  onFileDelete: AnyFunction<[fileId: string]>
   className?: string
 }
 
@@ -36,8 +36,13 @@ const FileList: React.FC<FileListProps> = ({
       setValue(file.title)
     }
   }
-  const exitFileNameEdit = useCallback(() => {
+  const exitFileNameEdit = useCallback((file?: FileObject) => {
     setCurrentEditId('')
+    setValue('')
+    // if renaming a newly created file, delete the file on exit
+    if (file?.isNew) {
+      onFileDelete(file.id)
+    }
   }, [])
   const onClickCb = <T extends AnyFunction = FileObjectAction>(
     func: T,
@@ -46,18 +51,28 @@ const FileList: React.FC<FileListProps> = ({
     e.stopPropagation()
     func(...args)
   }
+  // Watch on entering input state
   useEffect(() => {
     if (currentEditId) {
       inputRef.current?.focus()
     }
   }, [currentEditId])
   useEffect(() => {
+    const newFile = files.find((file) => file.isNew)
+    if (newFile) {
+      setCurrentEditId(newFile.id)
+      setValue(newFile.title)
+    }
+  }, [files])
+  // File name input state key handling
+  useEffect(() => {
     if (!currentEditId) return
-    if (enterPressed) {
+    const renamingFile = files.find((file) => file.id === currentEditId)
+    if (enterPressed && value.trim()) {
       onFileNameSave(currentEditId, value)
-      exitFileNameEdit()
+      exitFileNameEdit(renamingFile)
     } else if (escapePressed) {
-      exitFileNameEdit()
+      exitFileNameEdit(renamingFile)
     }
   }, [
     value,
@@ -75,7 +90,7 @@ const FileList: React.FC<FileListProps> = ({
           onClick={onClickCb(_onFileClick, file)}
           className="FileItem list-group-item list-group-item-action list-group-item-primary d-flex justify-content-between align-items-center cursor-pointer h-16"
         >
-          {currentEditId !== file.id && (
+          {currentEditId !== file.id && !file.isNew && (
             <>
               <span className="col-2">
                 <FontAwesomeIcon icon={faMarkdown} size="lg" />
@@ -97,12 +112,13 @@ const FileList: React.FC<FileListProps> = ({
               </span>
             </>
           )}
-          {currentEditId === file.id && (
+          {(currentEditId === file.id || file.isNew) && (
             <>
               <span className="col-10">
                 <input
                   ref={inputRef}
                   className="form-control"
+                  placeholder="Enter File Name"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
                 />
@@ -111,7 +127,7 @@ const FileList: React.FC<FileListProps> = ({
                 <button
                   type="button"
                   className="focus:outline-none"
-                  onClick={exitFileNameEdit}
+                  onClick={() => exitFileNameEdit()}
                 >
                   <FontAwesomeIcon icon="window-close" size="lg" />
                 </button>
