@@ -150,6 +150,7 @@ function App() {
   }
 
   const fileChange = (fileId: string, value: string) => {
+    // Todo: detect actual file change before setting a file is dirty
     updateFileObjectField(fileId, ['body'], [value])
 
     if (!unsavedFileIDs.includes(fileId)) {
