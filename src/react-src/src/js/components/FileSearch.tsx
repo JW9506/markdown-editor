@@ -21,6 +21,7 @@ const FileSearch: React.FC<FileSearchProps> = ({
   const closeSearch = () => {
     setInputActive(false)
     setValue('')
+    onFileSearch('')
   }
 
   useEffect(() => {

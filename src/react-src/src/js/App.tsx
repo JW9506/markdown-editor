@@ -15,6 +15,7 @@ function App() {
   const [files, setFiles] = useState(defaultFiles)
   const [activeFileID, setActiveFileID] = useState('')
   const [openedFileIDs, setOpenedFileIDs] = useState<string[]>([])
+  const [searchedFiles, setSearchedFiles] = useState(files)
   const [unsavedFileIDs, setUnsavedFileIDs] = useState<string[]>([])
   const openedFiles = openedFileIDs.map((id) => {
     let file = files.find((file) => file.id === id)
@@ -22,12 +23,12 @@ function App() {
     return file
   })
   const activeFile = files.find((file) => file.id === activeFileID)
-  const fileSearch = (title: string) => {
+  const fileSearch = (keyWord: string) => {
     let newFiles = defaultFiles
-    if (title) {
-      newFiles = files.filter((file) => file.title.includes(title))
+    if (keyWord) {
+      newFiles = files.filter((file) => file.title.includes(keyWord))
     }
-    setFiles(newFiles)
+    setSearchedFiles(newFiles)
   }
   const fileClick = (fileId: string) => {
     // set current active file
@@ -53,22 +54,33 @@ function App() {
     setActiveFileID(newTabList[nextActive] ?? '')
   }
   const fileChange = (fileId: string, value: string) => {
-    const newFiles = files.map((file) => {
-      if (file.id === fileId) {
-        file.body = value
-      }
-      return file
-    })
-    setFiles(newFiles)
+    updateFileObjectField(fileId, 'body', value)
+
     if (!unsavedFileIDs.includes(fileId)) {
       setUnsavedFileIDs([...unsavedFileIDs, fileId])
     }
   }
-  const fileDelete = (id: string) => {
-    console.log('fileDelete', id)
+  const fileDelete = (fileId: string) => {
+    const newFiles = files.filter((file) => file.id !== fileId)
+    setFiles(newFiles)
+    // close the tab if opened
+    tabClose(fileId)
   }
-  const fileNameSave = (id: string, title: string) => {
-    console.log('fileNameSave', id, title)
+  const updateFileObjectField = <
+    K extends keyof FileObject,
+    V extends FileObject[K]
+  >(
+    fileId: string,
+    key: K,
+    val: V
+  ): void => {
+    const newFiles = files.map((file) => {
+      if (file.id === fileId) {
+        file[key] = val
+      }
+      return file
+    })
+    setFiles(newFiles)
   }
   return (
     <div className="App container-fluid min-h-screen px-0">
@@ -81,9 +93,11 @@ function App() {
           />
           <FileList
             className="flex-1"
-            files={files}
+            files={searchedFiles}
             onFileClick={fileClick}
-            onFileNameSave={fileNameSave}
+            onFileNameSave={(id, title) =>
+              updateFileObjectField(id, 'title', title)
+            }
             onFileDelete={fileDelete}
           />
           <div className="row g-0 flex-0 pb-8">
