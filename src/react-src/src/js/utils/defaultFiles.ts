@@ -9,7 +9,7 @@ const defaultFiles: FileObject[] = [
   {
     id: '2',
     title: 'second post',
-    body: 'should be aware of this',
+    body: 'Dota Wtf',
     createdAt: Date.now(),
   },
   {

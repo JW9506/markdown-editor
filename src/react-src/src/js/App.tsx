@@ -9,6 +9,7 @@ import BottomBtn from './components/BottomBtn'
 import TabList from './components/TabList'
 import '../css/main.scss'
 import { ensure } from './utils/ensure'
+import { FileObject } from './typings'
 
 function App() {
   const [files, setFiles] = useState(defaultFiles)
@@ -28,8 +29,40 @@ function App() {
     }
     setFiles(newFiles)
   }
-  const fileClick = (id: string) => {
-    console.log('fileClick', id)
+  const fileClick = (fileId: string) => {
+    // set current active file
+    setActiveFileID(fileId)
+    // if openedFiles do not already have the current ID
+    // add new fileID to openedFiles
+    if (!openedFileIDs.includes(fileId)) {
+      setOpenedFileIDs([...openedFileIDs, fileId])
+    }
+  }
+  const tabClick = (fileId: string) => {
+    setActiveFileID(fileId)
+  }
+  const tabClose = (fileId: string) => {
+    let nextActive = 0
+    const newTabList = openedFileIDs.filter((id, idx) => {
+      if (id === fileId) {
+        nextActive = Math.min(openedFileIDs.length - 2, idx)
+      }
+      return id !== fileId
+    })
+    setOpenedFileIDs(newTabList)
+    setActiveFileID(newTabList[nextActive] ?? '')
+  }
+  const fileChange = (fileId: string, value: string) => {
+    const newFiles = files.map((file) => {
+      if (file.id === fileId) {
+        file.body = value
+      }
+      return file
+    })
+    setFiles(newFiles)
+    if (!unsavedFileIDs.includes(fileId)) {
+      setUnsavedFileIDs([...unsavedFileIDs, fileId])
+    }
   }
   const fileDelete = (id: string) => {
     console.log('fileDelete', id)
@@ -78,15 +111,15 @@ function App() {
                 className="flex-0"
                 files={openedFiles}
                 unsaveIds={unsavedFileIDs}
-                onTabClick={(id) => console.log('tab click', id)}
-                onCloseTab={(id) => console.log('close tab', id)}
+                onTabClick={tabClick}
+                onCloseTab={tabClose}
                 activeId={activeFileID}
               />
               <SimpleMDE
                 className="flex-1"
                 value={activeFile?.body ?? ''}
                 onChange={(value) => {
-                  console.log(value)
+                  fileChange(activeFileID, value)
                 }}
                 options={{ minHeight: '20px' }}
               />
