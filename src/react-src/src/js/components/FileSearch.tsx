@@ -5,7 +5,7 @@ import { useKeyPress } from '../hooks/useKeyPress'
 export interface FileSearchProps {
   title: string
   className?: string
-  onFileSearch: (value: string) => void
+  onFileSearch: (title: string) => void
 }
 
 const FileSearch: React.FC<FileSearchProps> = ({

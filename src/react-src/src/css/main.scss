@@ -1,6 +1,21 @@
+.App {
+  background-color: $list-group-item-primary;
+}
 .EasyMDEContainer {
   height: 100%;
 }
 .CodeMirror {
   height: calc(100% - 49px - 34px);
+}
+
+.start-page {
+  font-size: 30px;
+  height: 300px;
+  line-height: 300px;
+  color: #333;
+  text-align: center;
+}
+
+.no-border {
+  border-radius: 0 !important;
 }
