@@ -15,7 +15,7 @@ function App() {
   const [files, setFiles] = useState(defaultFiles)
   const [activeFileID, setActiveFileID] = useState('')
   const [openedFileIDs, setOpenedFileIDs] = useState<string[]>([])
-  const [searchedFiles, setSearchedFiles] = useState(files)
+  const [searchedFiles, setSearchedFiles] = useState<FileObject[]>([])
   const [unsavedFileIDs, setUnsavedFileIDs] = useState<string[]>([])
   const openedFiles = openedFileIDs.map((id) => {
     let file = files.find((file) => file.id === id)
@@ -24,10 +24,7 @@ function App() {
   })
   const activeFile = files.find((file) => file.id === activeFileID)
   const fileSearch = (keyWord: string) => {
-    let newFiles = defaultFiles
-    if (keyWord) {
-      newFiles = files.filter((file) => file.title.includes(keyWord))
-    }
+    const newFiles = files.filter((file) => file.title.includes(keyWord))
     setSearchedFiles(newFiles)
   }
   const fileClick = (fileId: string) => {
@@ -93,7 +90,7 @@ function App() {
           />
           <FileList
             className="flex-1"
-            files={searchedFiles}
+            files={searchedFiles.length ? searchedFiles : files}
             onFileClick={fileClick}
             onFileNameSave={(id, title) =>
               updateFileObjectField(id, 'title', title)
