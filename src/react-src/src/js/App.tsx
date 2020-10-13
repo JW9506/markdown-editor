@@ -1,5 +1,6 @@
 import { hot } from 'react-hot-loader/root'
 import React, { useState } from 'react'
+import { v4 as uuid } from 'uuid'
 import SimpleMDE from 'react-simplemde-editor'
 import 'easymde/dist/easymde.min.css'
 import FileList from './components/FileList'
@@ -17,6 +18,19 @@ function App() {
   const [openedFileIDs, setOpenedFileIDs] = useState<string[]>([])
   const [searchedFiles, setSearchedFiles] = useState<FileObject[]>([])
   const [unsavedFileIDs, setUnsavedFileIDs] = useState<string[]>([])
+  const createNewFile = () => {
+    const newID = uuid()
+    const newFiles: FileObject[] = [
+      ...files,
+      {
+        id: newID,
+        title: '',
+        body: '## default body',
+        createdAt: Date.now(),
+      },
+    ]
+    setFiles(newFiles)
+  }
   const openedFiles = openedFileIDs.map((id) => {
     let file = files.find((file) => file.id === id)
     file = ensure(file, 'Opened File Ids contain Ids that are not valid')
@@ -99,7 +113,11 @@ function App() {
           />
           <div className="row g-0 flex-0 pb-8">
             <div className="col-6">
-              <BottomBtn colorClass="btn-primary" icon="plus" />
+              <BottomBtn
+                colorClass="btn-primary"
+                icon="plus"
+                onBtnClick={createNewFile}
+              />
             </div>
             <div className="col-6">
               <BottomBtn
