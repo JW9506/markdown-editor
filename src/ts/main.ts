@@ -10,6 +10,7 @@ app.on('ready', () => {
     height: 300,
     webPreferences: {
       nodeIntegration: true,
+      enableRemoteModule: true,
     },
   })
   if (isDev) {
