@@ -4,6 +4,7 @@ import isDev from 'electron-is-dev'
 const REACT_PORT = 3123
 
 let win: BrowserWindow
+app.allowRendererProcessReuse = false
 app.on('ready', () => {
   win = new BrowserWindow({
     width: 300,
