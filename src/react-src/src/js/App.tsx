@@ -15,6 +15,9 @@ import {
   flattenedFileObjectCollectionToArr,
   flattenFileObjectCollection,
 } from './utils/helper'
+import { renameFile, writeFile } from './utils/fileHelper'
+import path from 'path'
+import { remote } from 'electron'
 
 function App() {
   const [files, setFiles] = useState(flattenFileObjectCollection(defaultFiles))
@@ -23,6 +26,11 @@ function App() {
   const [searchedFiles, setSearchedFiles] = useState<FileObject[]>([])
   const [unsavedFileIDs, setUnsavedFileIDs] = useState<string[]>([])
   const fileObjArr = flattenedFileObjectCollectionToArr(files)
+  const saveLocation = path.join(
+    remote.app.getPath('home'),
+    '_tempfiles',
+    'electron_md_notepad_cache'
+  )
   const createNewFile = () => {
     const newID = uuid()
     files[newID] = {
@@ -40,6 +48,30 @@ function App() {
     return file
   })
   const activeFile = files[activeFileID]
+  const fileNameSave = async (id: string, title: string, isNew?: boolean) => {
+    const keys: Array<keyof FileObject> = ['title']
+    const values: any[] = [title]
+    if (isNew) {
+      keys.push('isNew')
+      values.push(false)
+      try {
+        await writeFile(path.join(saveLocation, `${title}.md`), files[id].body)
+        updateFileObjectField(id, keys, values)
+      } catch (e) {
+        console.error(e)
+      }
+    } else {
+      try {
+        await renameFile(
+          path.join(saveLocation, `${files[id].title}.md`),
+          path.join(saveLocation, `${title}.md`)
+        )
+        updateFileObjectField(id, keys, values)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }
   const fileSearch = (keyWord: string) => {
     if (!keyWord) setSearchedFiles([])
     else {
@@ -104,7 +136,7 @@ function App() {
       file[key] = val
     }
 
-    setFiles({ ...files, [fileId]: file })
+    setFiles({ ...files })
   }
   return (
     <div className="App container-fluid min-h-screen px-0">
@@ -119,9 +151,7 @@ function App() {
             className="flex-1"
             files={searchedFiles.length ? searchedFiles : fileObjArr}
             onFileClick={fileClick}
-            onFileNameSave={(id, title) =>
-              updateFileObjectField(id, ['title', 'isNew'], [title, false])
-            }
+            onFileNameSave={fileNameSave}
             onFileDelete={fileDelete}
           />
           <div className="row g-0 flex-0 pb-8">

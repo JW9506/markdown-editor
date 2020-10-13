@@ -8,7 +8,7 @@ type FileObjectAction = (file: FileObject) => void
 export interface FileListProps {
   files: FileObject[]
   onFileClick: AnyFunction
-  onFileNameSave: AnyFunction<[id: string, title: string]>
+  onFileNameSave: AnyFunction<[id: string, title: string, isNew?: boolean]>
   onFileDelete: AnyFunction<[fileId: string]>
   className?: string
 }
@@ -69,13 +69,14 @@ const FileList: React.FC<FileListProps> = ({
     if (!currentEditId) return
     const renamingFile = files.find((file) => file.id === currentEditId)
     if (enterPressed && value.trim()) {
-      onFileNameSave(currentEditId, value)
+      onFileNameSave(currentEditId, value, renamingFile?.isNew)
       exitFileNameEdit(renamingFile)
     } else if (escapePressed) {
       exitFileNameEdit(renamingFile)
     }
   }, [
     value,
+    files,
     currentEditId,
     exitFileNameEdit,
     onFileNameSave,
