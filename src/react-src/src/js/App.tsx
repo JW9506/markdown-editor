@@ -5,7 +5,6 @@ import SimpleMDE from 'react-simplemde-editor'
 import 'easymde/dist/easymde.min.css'
 import FileList from './components/FileList'
 import FileSearch from './components/FileSearch'
-import defaultFiles from './utils/defaultFiles'
 import BottomBtn from './components/BottomBtn'
 import TabList from './components/TabList'
 import '../css/main.scss'
@@ -15,12 +14,32 @@ import {
   flattenedFileObjectCollectionToArr,
   flattenFileObjectCollection,
 } from './utils/helper'
-import { deleteFile, renameFile, writeFile } from './utils/fileHelper'
+import { deleteFile, readFile, renameFile, writeFile } from './utils/fileHelper'
 import path from 'path'
 import { remote } from 'electron'
+import Store from 'electron-store'
+
+const fileStore = new Store<
+  Record<'files', Record<string, FileObject> | undefined>
+>({
+  name: 'Files Data',
+})
+
+const saveFilesToStore = (filesObj: Record<string, FileObject>) => {
+  // save all fields except isNew, body
+  const filesStoreObj = flattenedFileObjectCollectionToArr(filesObj).reduce(
+    (res, file) => {
+      const { id, path, title, createdAt } = file
+      res[id] = { id, path, title, createdAt }
+      return res
+    },
+    {} as Record<string, Omit<FileObject, 'body' | 'isNew' | 'isLoaded'>>
+  )
+  fileStore.set('files', filesStoreObj)
+}
 
 function App() {
-  const [files, setFiles] = useState(flattenFileObjectCollection(defaultFiles))
+  const [files, setFiles] = useState(fileStore.get('files') ?? {})
   const [activeFileID, setActiveFileID] = useState('')
   const [openedFileIDs, setOpenedFileIDs] = useState<string[]>([])
   const [searchedFiles, setSearchedFiles] = useState<FileObject[]>([])
@@ -50,6 +69,7 @@ function App() {
       title: '',
       body: '## default body',
       createdAt: Date.now(),
+      path: saveLocation,
       isNew: true,
     }
     setFiles({ ...files })
@@ -90,9 +110,18 @@ function App() {
       setSearchedFiles(newFiles)
     }
   }
-  const fileClick = (fileId: string) => {
+  const fileClick = async (fileId: string) => {
     // set current active file
     setActiveFileID(fileId)
+    const currentFile = files[fileId]
+    if (!currentFile.isLoaded) {
+      const content = await readFile(
+        path.join(currentFile.path, currentFile.title + '.md')
+      )
+      currentFile.body = content
+      currentFile.isLoaded = true
+    }
+    setFiles({ ...files })
     // if openedFiles do not already have the current ID
     // add new fileID to openedFiles
     if (!openedFileIDs.includes(fileId)) {
@@ -123,8 +152,10 @@ function App() {
   const fileDelete = async (fileId: string) => {
     try {
       await deleteFile(path.join(saveLocation, `${files[fileId].title}.md`))
+      setOpenedFileIDs(openedFileIDs.filter((id) => id !== fileId))
       delete files[fileId]
       setFiles({ ...files })
+      saveFilesToStore(files)
       // close the tab if opened
       tabClose(fileId)
     } catch (e) {
@@ -151,8 +182,9 @@ function App() {
       val = values[i]
       file[key] = val
     }
-
-    setFiles({ ...files })
+    const newFiles = { ...files }
+    setFiles(newFiles)
+    saveFilesToStore(newFiles)
   }
   return (
     <div className="App container-fluid min-h-screen px-0">
