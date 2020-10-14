@@ -1,5 +1,5 @@
 import { hot } from 'react-hot-loader/root'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 import SimpleMDE from 'react-simplemde-editor'
 import 'easymde/dist/easymde.min.css'
@@ -16,7 +16,7 @@ import {
 } from './utils/helper'
 import { deleteFile, readFile, renameFile, writeFile } from './utils/fileHelper'
 import path from 'path'
-import { remote } from 'electron'
+import { remote, ipcRenderer } from 'electron'
 import Store from 'electron-store'
 
 const fileStore = new Store<
@@ -257,6 +257,17 @@ function App() {
       }
     }
   }
+
+  useEffect(() => {
+    const callback = () => {
+      console.log('hello from menu')
+    }
+    ipcRenderer.on('create-new-file', callback)
+    return () => {
+      ipcRenderer.off('create-new-file', callback)
+    }
+  }, [])
+
   if (isFilesLoaded(openedFiles)) {
     return (
       <div className="App container-fluid h-screen px-0 flex flex-col">
