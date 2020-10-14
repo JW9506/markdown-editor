@@ -201,6 +201,15 @@ function App() {
     saveFilesToStore(newFiles)
   }
 
+  const importFiles = async () => {
+    const { filePaths } = await remote.dialog.showOpenDialog({
+      title: 'Choose Markdown files to import',
+      properties: ['openFile', 'multiSelections'],
+      filters: [{ name: 'Markdown files', extensions: ['md'] }],
+    })
+    console.log(filePaths)
+  }
+
   return (
     <div className="App container-fluid min-h-screen px-0">
       <div className="row g-0">
@@ -229,6 +238,7 @@ function App() {
               <BottomBtn
                 text="Import"
                 colorClass="btn-success"
+                onBtnClick={importFiles}
                 icon="file-import"
               />
             </div>
