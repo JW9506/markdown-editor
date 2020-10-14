@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useKeyPress } from '../hooks/useKeyPress'
+import { useIpcRenderer } from '../hooks/useIpcRenderer'
 
 export interface FileSearchProps {
   title: string
@@ -49,6 +50,10 @@ const FileSearch: React.FC<FileSearchProps> = ({
       inputRef.current?.focus()
     }
   }, [inputActive])
+
+  useIpcRenderer({
+    'search-file': () => setInputActive(true),
+  })
 
   return (
     <div

@@ -169,6 +169,7 @@ function App() {
   }
 
   const fileChange = (fileId: string, value: string) => {
+    if (value === files[fileId].body) return
     // Todo: detect actual file change before setting a file is dirty
     updateFileObjectField(fileId, ['body'], [value])
 
@@ -264,9 +265,6 @@ function App() {
     {
       'create-new-file': createNewFile,
       'save-edit-file': saveCurrentFile,
-      'search-file': () => {
-        console.log('searching file')
-      },
       'import-file': importFiles,
     },
     [createNewFile, saveCurrentFile, importFiles]

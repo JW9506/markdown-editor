@@ -9,14 +9,17 @@ interface IPCRendererCallbackMap {
   'import-file': AnyFunction
 }
 
-export function useIpcRenderer(cbMap: IPCRendererCallbackMap, deps?: any[]) {
+export function useIpcRenderer(
+  cbMap: Partial<IPCRendererCallbackMap>,
+  deps?: any[]
+) {
   useEffect(() => {
     Object.keys(cbMap).forEach((key) => {
-      ipcRenderer.on(key, cbMap[key])
+      if (cbMap[key]) ipcRenderer.on(key, cbMap[key]!)
     })
     return () => {
       Object.keys(cbMap).forEach((key) => {
-        ipcRenderer.off(key, cbMap[key])
+        if (cbMap[key]) ipcRenderer.off(key, cbMap[key]!)
       })
     }
   }, deps)
