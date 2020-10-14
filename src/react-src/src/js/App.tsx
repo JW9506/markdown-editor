@@ -145,8 +145,10 @@ function App() {
       }
       return id !== fileId
     })
-    setOpenedFileIDs(newTabList)
-    setActiveFileID(newTabList[nextActive] ?? '')
+    if (newTabList.length !== openedFileIDs.length) {
+      setOpenedFileIDs(newTabList)
+      setActiveFileID(newTabList[nextActive] ?? '')
+    }
   }
 
   const fileChange = (fileId: string, value: string) => {
@@ -160,7 +162,9 @@ function App() {
 
   const fileDelete = async (fileId: string) => {
     try {
-      await deleteFile(path.join(saveLocation, `${files[fileId].title}.md`))
+      if (files[fileId]?.title) {
+        await deleteFile(path.join(saveLocation, `${files[fileId].title}.md`))
+      }
       setOpenedFileIDs(openedFileIDs.filter((id) => id !== fileId))
       delete files[fileId]
       setFiles({ ...files })

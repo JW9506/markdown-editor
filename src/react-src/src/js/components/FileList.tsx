@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMarkdown } from '@fortawesome/free-brands-svg-icons'
 import { AnyFunction, FileObject } from '../typings'
 import { useKeyPress } from '../hooks/useKeyPress'
+import { onClickCb } from '../utils/onClickCb'
 
 type FileObjectAction = (file: FileObject) => void
 export interface FileListProps {
@@ -25,8 +26,13 @@ const FileList: React.FC<FileListProps> = ({
   const inputRef = useRef<HTMLInputElement | null>(null)
   const enterPressed = useKeyPress('Enter')
   const escapePressed = useKeyPress('Escape')
+  const currentEditFile = useMemo(
+    () => files.find((file) => file.id === currentEditId),
+    [currentEditId]
+  )
+
   const _onFileClick = (file: FileObject) => {
-    if (currentEditId !== file.id) {
+    if (currentEditId !== file.id && !file.isNew) {
       onFileClick(file.id)
     }
   }
@@ -36,21 +42,14 @@ const FileList: React.FC<FileListProps> = ({
       setValue(file.title)
     }
   }
-  const exitFileNameEdit = useCallback((file?: FileObject) => {
+  const exitFileNameEdit = useCallback(() => {
     setCurrentEditId('')
     setValue('')
     // if renaming a newly created file, delete the file on exit
-    if (file?.isNew) {
-      onFileDelete(file.id)
+    if (currentEditFile?.isNew) {
+      onFileDelete(currentEditFile.id)
     }
-  }, [])
-  const onClickCb = <T extends AnyFunction = FileObjectAction>(
-    func: T,
-    ...args: Parameters<T>
-  ) => (e: React.MouseEvent) => {
-    e.stopPropagation()
-    func(...args)
-  }
+  }, [currentEditFile])
   // Watch on entering input state
   useEffect(() => {
     if (currentEditId) {
@@ -66,19 +65,19 @@ const FileList: React.FC<FileListProps> = ({
   }, [files])
   // File name input state key handling
   useEffect(() => {
-    if (!currentEditId) return
-    const renamingFile = files.find((file) => file.id === currentEditId)
-    if (enterPressed && value.trim()) {
-      onFileNameSave(currentEditId, value, renamingFile?.isNew)
-      if (renamingFile?.isNew) renamingFile.isNew = false
-      exitFileNameEdit(renamingFile)
-    } else if (escapePressed) {
-      exitFileNameEdit(renamingFile)
+    if (escapePressed) {
+      exitFileNameEdit()
+    }
+    if (enterPressed && !!currentEditFile && value.trim()) {
+      onFileNameSave(currentEditId, value, currentEditFile?.isNew)
+      if (currentEditFile?.isNew) currentEditFile.isNew = false
+      exitFileNameEdit()
     }
   }, [
     value,
     files,
     currentEditId,
+    currentEditFile,
     exitFileNameEdit,
     onFileNameSave,
     enterPressed,
@@ -89,7 +88,7 @@ const FileList: React.FC<FileListProps> = ({
       {files.map((file) => (
         <li
           key={file.id}
-          onClick={onClickCb(_onFileClick, file)}
+          onClick={onClickCb(_onFileClick, [], file)}
           className="FileItem list-group-item list-group-item-action list-group-item-primary d-flex justify-content-between align-items-center cursor-pointer h-16"
         >
           {currentEditId !== file.id && !file.isNew && (
@@ -100,13 +99,13 @@ const FileList: React.FC<FileListProps> = ({
               <span className="col-8">{file.title}</span>
               <span className="col-2">
                 <button
-                  onClick={onClickCb(fileEdit, file)}
+                  onClick={onClickCb(fileEdit, ['stop'], file)}
                   className="focus:outline-none"
                 >
                   <FontAwesomeIcon title="edit" icon="edit" size="lg" />
                 </button>
                 <button
-                  onClick={onClickCb(onFileDelete, file.id)}
+                  onClick={onClickCb(onFileDelete, ['stop'], file.id)}
                   className="focus:outline-none"
                 >
                   <FontAwesomeIcon title="trash" icon="trash" size="lg" />
@@ -129,7 +128,7 @@ const FileList: React.FC<FileListProps> = ({
                 <button
                   type="button"
                   className="focus:outline-none"
-                  onClick={() => exitFileNameEdit()}
+                  onClick={onClickCb(exitFileNameEdit, ['stop'])}
                 >
                   <FontAwesomeIcon icon="window-close" size="lg" />
                 </button>
