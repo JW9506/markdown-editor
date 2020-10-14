@@ -259,8 +259,8 @@ function App() {
   }
   if (isFilesLoaded(openedFiles)) {
     return (
-      <div className="App container-fluid min-h-screen px-0">
-        <div className="row g-0">
+      <div className="App container-fluid h-screen px-0 flex flex-col">
+        <div className="row g-0 flex-1 h-0">
           <div className="col-3 left-panel flex flex-col">
             <FileSearch
               className="flex-0"
@@ -274,31 +274,6 @@ function App() {
               onFileNameSave={fileNameSave}
               onFileDelete={fileDelete}
             />
-            <div className="row g-0 flex-0 pb-8">
-              <div className="col-6">
-                <BottomBtn
-                  colorClass="btn-primary"
-                  icon="plus"
-                  onBtnClick={createNewFile}
-                />
-              </div>
-              <div className="col-3">
-                <BottomBtn
-                  text="Import"
-                  colorClass="btn-success"
-                  onBtnClick={importFiles}
-                  icon="file-import"
-                />
-              </div>
-              <div className="col-3">
-                <BottomBtn
-                  text="Save"
-                  colorClass="btn-success"
-                  onBtnClick={saveCurrentFile}
-                  icon="save"
-                />
-              </div>
-            </div>
           </div>
           <div className="col-9 right-panel h-screen flex flex-col">
             {!activeFile && (
@@ -326,6 +301,31 @@ function App() {
                 />
               </>
             )}
+          </div>
+        </div>
+        <div className="row g-0 flex-0">
+          <div className="col-3">
+            <BottomBtn
+              colorClass="btn-primary"
+              icon="plus"
+              onBtnClick={createNewFile}
+            />
+          </div>
+          <div className="col-3">
+            <BottomBtn
+              text="Import"
+              colorClass="btn-success"
+              onBtnClick={importFiles}
+              icon="file-import"
+            />
+          </div>
+          <div className="col-6">
+            <BottomBtn
+              text="Save"
+              colorClass="btn-info"
+              onBtnClick={saveCurrentFile}
+              icon="save"
+            />
           </div>
         </div>
       </div>
