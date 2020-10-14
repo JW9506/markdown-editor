@@ -5,7 +5,6 @@ import { AnyFunction, FileObject } from '../typings'
 import { useKeyPress } from '../hooks/useKeyPress'
 import { onClickCb } from '../utils/onClickCb'
 
-type FileObjectAction = (file: FileObject) => void
 export interface FileListProps {
   files: FileObject[]
   onFileClick: AnyFunction
