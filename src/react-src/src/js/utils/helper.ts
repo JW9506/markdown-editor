@@ -21,5 +21,5 @@ export function getParentNode(node: HTMLElement | null, parentClassName: string)
     }
     current = current.parentElement
   }
-  return false
+  return
 }

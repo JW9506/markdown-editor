@@ -37,10 +37,10 @@ const FileList: React.FC<FileListProps> = ({
       onFileClick(file.id)
     }
   }
-  const fileEdit = (file: FileObjectBeforeLoaded) => {
-    if (currentEditId !== file.id) {
-      setCurrentEditId(file.id)
-      setValue(file.title)
+  const fileEdit = (fileId: string, fileTitle: string) => {
+    if (currentEditId !== fileId) {
+      setCurrentEditId(fileId)
+      setValue(fileTitle)
     }
   }
   const exitFileNameEdit = useCallback(() => {
@@ -52,29 +52,38 @@ const FileList: React.FC<FileListProps> = ({
     }
   }, [currentEditFile])
 
+  // right click context
   const clickedItem = useContextMenu(
     [
       {
         label: 'Open',
         click: () => {
           const node = getParentNode(clickedItem.current, 'FileItem')
-          if (node) {
-            if (node.dataset.id) {
-              onFileClick(node.dataset.id)
-            }
+          let id: string | undefined
+          if ((id = node?.dataset?.id)) {
+            onFileClick(id)
           }
         },
       },
       {
         label: 'Rename',
         click: () => {
-          console.log('renaming')
+          const node = getParentNode(clickedItem.current, 'FileItem')
+          let id: string | undefined
+          let title: string | undefined
+          if ((id = node?.dataset?.id) && (title = node?.dataset?.title)) {
+            fileEdit(id, title)
+          }
         },
       },
       {
         label: 'Delete',
         click: () => {
-          console.log('Deleting')
+          const node = getParentNode(clickedItem.current, 'FileItem')
+          let id: string | undefined
+          if ((id = node?.dataset?.id)) {
+            onFileDelete(id)
+          }
         },
       },
     ],
@@ -132,21 +141,7 @@ const FileList: React.FC<FileListProps> = ({
               <span className="col-2">
                 <FontAwesomeIcon icon={faMarkdown} size="lg" />
               </span>
-              <span className="col-8">{file.title}</span>
-              <span className="col-2">
-                <button
-                  onClick={onClickCb(fileEdit, ['stop'], file)}
-                  className="focus:outline-none"
-                >
-                  <FontAwesomeIcon title="edit" icon="edit" size="lg" />
-                </button>
-                <button
-                  onClick={onClickCb(onFileDelete, ['stop'], file.id)}
-                  className="focus:outline-none"
-                >
-                  <FontAwesomeIcon title="trash" icon="trash" size="lg" />
-                </button>
-              </span>
+              <span className="col-10">{file.title}</span>
             </>
           )}
           {(currentEditId === file.id || file.isNew) && (
