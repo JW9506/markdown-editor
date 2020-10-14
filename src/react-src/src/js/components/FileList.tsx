@@ -5,10 +5,11 @@ import { AnyFunction, FileObjectBeforeLoaded } from '../typings'
 import { useKeyPress } from '../hooks/useKeyPress'
 import { onClickCb } from '../utils/onClickCb'
 import { useContextMenu } from '../hooks/useContextMenu'
+import { getParentNode } from '../utils/helper'
 
 export interface FileListProps {
   files: FileObjectBeforeLoaded[]
-  onFileClick: AnyFunction
+  onFileClick: AnyFunction<[fileId: string]>
   onFileNameSave: AnyFunction<[id: string, title: string, isNew?: boolean]>
   onFileDelete: AnyFunction<[fileId: string]>
   className?: string
@@ -51,26 +52,34 @@ const FileList: React.FC<FileListProps> = ({
     }
   }, [currentEditFile])
 
-  const clickedItem = useContextMenu([
-    {
-      label: 'Open',
-      click: () => {
-        console.log('clickng', clickedItem.current)
+  const clickedItem = useContextMenu(
+    [
+      {
+        label: 'Open',
+        click: () => {
+          const node = getParentNode(clickedItem.current, 'FileItem')
+          if (node) {
+            if (node.dataset.id) {
+              onFileClick(node.dataset.id)
+            }
+          }
+        },
       },
-    },
-    {
-      label: 'Rename',
-      click: () => {
-        console.log('renaming')
+      {
+        label: 'Rename',
+        click: () => {
+          console.log('renaming')
+        },
       },
-    },
-    {
-      label: 'Delete',
-      click: () => {
-        console.log('Deleting')
+      {
+        label: 'Delete',
+        click: () => {
+          console.log('Deleting')
+        },
       },
-    },
-  ], '.FileList')
+    ],
+    '.FileList'
+  )
 
   // Watch on entering input state
   useEffect(() => {
@@ -114,6 +123,8 @@ const FileList: React.FC<FileListProps> = ({
           key={file.id}
           onClick={onClickCb(_onFileClick, [], file)}
           className="FileItem list-group-item list-group-item-action list-group-item-primary d-flex justify-content-between align-items-center cursor-pointer h-16"
+          data-id={file.id}
+          data-title={file.title}
         >
           {currentEditId !== file.id && !file.isNew && (
             <>

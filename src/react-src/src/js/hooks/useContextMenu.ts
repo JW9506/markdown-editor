@@ -7,14 +7,14 @@ export function useContextMenu(
   itemArr: MenuItemConstructorOptions[],
   targetSelector: string
 ) {
-  const clickedElement = useRef<Node | null>(null)
+  const clickedElement = useRef<HTMLElement | null>(null)
   useEffect(() => {
     const menu = new Menu()
     itemArr.forEach((item) => {
       menu.append(new MenuItem(item))
     })
     const handleContextMenu = (e: MouseEvent) => {
-      clickedElement.current = e.target as Node | null
+      clickedElement.current = e.target as HTMLElement | null
       if (
         document.querySelector(targetSelector)?.contains(clickedElement.current)
       ) {
@@ -23,6 +23,7 @@ export function useContextMenu(
     }
     window.addEventListener('contextmenu', handleContextMenu)
     return () => window.removeEventListener('contextmenu', handleContextMenu)
-  }, [])
+  // if don't require updates using [], may cause bug
+  })
   return clickedElement
 }

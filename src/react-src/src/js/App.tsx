@@ -127,8 +127,8 @@ function App() {
 
   const fileClick = async (fileId: string) => {
     // set current active file
-    setActiveFileID(fileId)
     const currentFile = files[fileId]
+    if (currentFile == null) return
     if (!currentFile.isLoaded) {
       try {
         const content = await readFile(
@@ -136,13 +136,14 @@ function App() {
         )
         currentFile.body = content
         currentFile.isLoaded = true
+        setFiles({ ...files })
       } catch (e) {
         console.error(e)
       }
     }
-    setFiles({ ...files })
     // if openedFiles do not already have the current ID
     // add new fileID to openedFiles
+    setActiveFileID(fileId)
     if (!openedFileIDs.includes(fileId)) {
       setOpenedFileIDs([...openedFileIDs, fileId])
     }
@@ -178,7 +179,9 @@ function App() {
   const fileDelete = async (fileId: string) => {
     try {
       if (files[fileId]?.title) {
-        await deleteFile(path.join(files[fileId].path, `${files[fileId].title}.md`))
+        await deleteFile(
+          path.join(files[fileId].path, `${files[fileId].title}.md`)
+        )
       }
       setOpenedFileIDs(openedFileIDs.filter((id) => id !== fileId))
       delete files[fileId]
