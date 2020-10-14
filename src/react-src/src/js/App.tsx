@@ -8,21 +8,23 @@ import FileSearch from './components/FileSearch'
 import BottomBtn from './components/BottomBtn'
 import TabList from './components/TabList'
 import '../css/main.scss'
-import { ensure } from './utils/ensure'
-import { FileObject } from './typings'
-import { flattenedFileObjectCollectionToArr } from './utils/helper'
+import { ensure, isFilesLoaded } from './utils/ensure'
+import { FileObject, FileObjectBeforeLoaded } from './typings'
+import {
+  flattenedFileObjectCollectionToArr,
+  flattenFileObjectCollection,
+} from './utils/helper'
 import { deleteFile, readFile, renameFile, writeFile } from './utils/fileHelper'
 import path from 'path'
 import { remote } from 'electron'
 import Store from 'electron-store'
 
 const fileStore = new Store<
-  Record<'files', Record<string, FileObject> | undefined>
+  Record<'files', Record<string, FileObjectBeforeLoaded> | undefined>
 >({
   name: 'Files Data',
 })
-
-const saveFilesToStore = (filesObj: Record<string, FileObject>) => {
+const saveFilesToStore = (filesObj: Record<string, FileObjectBeforeLoaded>) => {
   // save all fields except isNew, body
   const filesStoreObj = flattenedFileObjectCollectionToArr(filesObj).reduce(
     (res, file) => {
@@ -30,7 +32,7 @@ const saveFilesToStore = (filesObj: Record<string, FileObject>) => {
       res[id] = { id, path, title, createdAt }
       return res
     },
-    {} as Record<string, Omit<FileObject, 'body' | 'isNew' | 'isLoaded'>>
+    {} as Record<string, FileObjectBeforeLoaded>
   )
   fileStore.set('files', filesStoreObj)
 }
@@ -39,7 +41,9 @@ function App() {
   const [files, setFiles] = useState(fileStore.get('files') ?? {})
   const [activeFileID, setActiveFileID] = useState('')
   const [openedFileIDs, setOpenedFileIDs] = useState<string[]>([])
-  const [searchedFiles, setSearchedFiles] = useState<FileObject[]>([])
+  const [searchedFiles, setSearchedFiles] = useState<FileObjectBeforeLoaded[]>(
+    []
+  )
   const [unsavedFileIDs, setUnsavedFileIDs] = useState<string[]>([])
   const [isNewfileBeingCreated, toggleNewfileBeingCreated] = useState(false)
   const fileObjArr = flattenedFileObjectCollectionToArr(files)
@@ -55,7 +59,7 @@ function App() {
     try {
       await writeFile(
         path.join(saveLocation, `${activeFile.title}.md`),
-        activeFile.body
+        activeFile.body ?? ''
       )
       setUnsavedFileIDs(unsavedFileIDs.filter((id) => id !== activeFile.id))
     } catch (e) {
@@ -91,7 +95,10 @@ function App() {
       keys.push('isNew')
       values.push(false)
       try {
-        await writeFile(path.join(saveLocation, `${title}.md`), files[id].body)
+        await writeFile(
+          path.join(saveLocation, `${title}.md`),
+          files[id]?.body ?? ''
+        )
         updateFileObjectField(id, keys, values)
       } catch (e) {
         console.error(e)
@@ -123,11 +130,15 @@ function App() {
     setActiveFileID(fileId)
     const currentFile = files[fileId]
     if (!currentFile.isLoaded) {
-      const content = await readFile(
-        path.join(currentFile.path, currentFile.title + '.md')
-      )
-      currentFile.body = content
-      currentFile.isLoaded = true
+      try {
+        const content = await readFile(
+          path.join(currentFile.path, currentFile.title + '.md')
+        )
+        currentFile.body = content
+        currentFile.isLoaded = true
+      } catch (e) {
+        console.error(e)
+      }
     }
     setFiles({ ...files })
     // if openedFiles do not already have the current ID
@@ -211,81 +222,115 @@ function App() {
       properties: ['openFile', 'multiSelections'],
       filters: [{ name: 'Markdown files', extensions: ['md'] }],
     })
-    console.log(filePaths)
+    if (Array.isArray(filePaths)) {
+      // O(paths.length * files.length)
+      const filteredPaths = filePaths.filter((filePath) => {
+        const alreadyAdded = Object.values(files).find(
+          (file) => path.join(file.path, file.title + '.md') === filePath
+        )
+        return !alreadyAdded
+      })
+      const importFilesArr: FileObjectBeforeLoaded[] = filteredPaths.map(
+        (filePath) => {
+          return {
+            id: uuid(),
+            path: path.dirname(filePath),
+            title: path.basename(filePath, path.extname(filePath)),
+          }
+        }
+      )
+      const newFiles = {
+        ...files,
+        ...flattenFileObjectCollection(importFilesArr),
+      }
+      // todo: load to the filelist
+      setFiles(newFiles)
+      saveFilesToStore(newFiles)
+      if (importFilesArr.length) {
+        remote.dialog.showMessageBox({
+          type: 'info',
+          title: 'Notice',
+          message: `Successfully imported ${importFilesArr.length} files`,
+        })
+      }
+    }
   }
-
-  return (
-    <div className="App container-fluid min-h-screen px-0">
-      <div className="row g-0">
-        <div className="col-3 left-panel flex flex-col">
-          <FileSearch
-            className="flex-0"
-            title="My Cloud Doc"
-            onFileSearch={fileSearch}
-          />
-          <FileList
-            className="flex-1"
-            files={searchedFiles.length ? searchedFiles : fileObjArr}
-            onFileClick={fileClick}
-            onFileNameSave={fileNameSave}
-            onFileDelete={fileDelete}
-          />
-          <div className="row g-0 flex-0 pb-8">
-            <div className="col-6">
-              <BottomBtn
-                colorClass="btn-primary"
-                icon="plus"
-                onBtnClick={createNewFile}
-              />
-            </div>
-            <div className="col-3">
-              <BottomBtn
-                text="Import"
-                colorClass="btn-success"
-                onBtnClick={importFiles}
-                icon="file-import"
-              />
-            </div>
-            <div className="col-3">
-              <BottomBtn
-                text="Save"
-                colorClass="btn-success"
-                onBtnClick={saveCurrentFile}
-                icon="save"
-              />
+  if (isFilesLoaded(openedFiles)) {
+    return (
+      <div className="App container-fluid min-h-screen px-0">
+        <div className="row g-0">
+          <div className="col-3 left-panel flex flex-col">
+            <FileSearch
+              className="flex-0"
+              title="My Cloud Doc"
+              onFileSearch={fileSearch}
+            />
+            <FileList
+              className="flex-1"
+              files={searchedFiles.length ? searchedFiles : fileObjArr}
+              onFileClick={fileClick}
+              onFileNameSave={fileNameSave}
+              onFileDelete={fileDelete}
+            />
+            <div className="row g-0 flex-0 pb-8">
+              <div className="col-6">
+                <BottomBtn
+                  colorClass="btn-primary"
+                  icon="plus"
+                  onBtnClick={createNewFile}
+                />
+              </div>
+              <div className="col-3">
+                <BottomBtn
+                  text="Import"
+                  colorClass="btn-success"
+                  onBtnClick={importFiles}
+                  icon="file-import"
+                />
+              </div>
+              <div className="col-3">
+                <BottomBtn
+                  text="Save"
+                  colorClass="btn-success"
+                  onBtnClick={saveCurrentFile}
+                  icon="save"
+                />
+              </div>
             </div>
           </div>
-        </div>
-        <div className="col-9 right-panel h-screen flex flex-col">
-          {!activeFile && (
-            <div className="start-page">
-              Choose or create a new Markdown document
-            </div>
-          )}
-          {activeFile && (
-            <>
-              <TabList
-                className="flex-0"
-                files={openedFiles}
-                unsaveIds={unsavedFileIDs}
-                onTabClick={tabClick}
-                onCloseTab={tabClose}
-                activeId={activeFileID}
-              />
-              <SimpleMDE
-                className="flex-1"
-                value={activeFile?.body ?? ''}
-                onChange={(value) => {
-                  fileChange(activeFileID, value)
-                }}
-                options={{ minHeight: '20px' }}
-              />
-            </>
-          )}
+          <div className="col-9 right-panel h-screen flex flex-col">
+            {!activeFile && (
+              <div className="start-page">
+                Choose or create a new Markdown document
+              </div>
+            )}
+            {activeFile && (
+              <>
+                <TabList
+                  className="flex-0"
+                  files={openedFiles}
+                  unsaveIds={unsavedFileIDs}
+                  onTabClick={tabClick}
+                  onCloseTab={tabClose}
+                  activeId={activeFileID}
+                />
+                <SimpleMDE
+                  className="flex-1"
+                  value={activeFile?.body ?? ''}
+                  onChange={(value) => {
+                    fileChange(activeFileID, value)
+                  }}
+                  options={{ minHeight: '20px' }}
+                />
+              </>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  )
+    )
+  } else {
+    return <></>
+  }
 }
 
 export default hot(App)

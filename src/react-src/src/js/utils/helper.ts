@@ -1,6 +1,8 @@
-import { FileObject } from '../typings'
+import { FileObjectBeforeLoaded } from '../typings'
 
-export function flattenFileObjectCollection<T extends FileObject>(arr: T[]) {
+export function flattenFileObjectCollection<T extends FileObjectBeforeLoaded>(
+  arr: T[]
+) {
   return arr.reduce((map, item) => {
     map[item.id] = item
     return map

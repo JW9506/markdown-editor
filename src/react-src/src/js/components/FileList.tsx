@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMarkdown } from '@fortawesome/free-brands-svg-icons'
-import { AnyFunction, FileObject } from '../typings'
+import { AnyFunction, FileObjectBeforeLoaded } from '../typings'
 import { useKeyPress } from '../hooks/useKeyPress'
 import { onClickCb } from '../utils/onClickCb'
 
 export interface FileListProps {
-  files: FileObject[]
+  files: FileObjectBeforeLoaded[]
   onFileClick: AnyFunction
   onFileNameSave: AnyFunction<[id: string, title: string, isNew?: boolean]>
   onFileDelete: AnyFunction<[fileId: string]>
@@ -30,12 +30,12 @@ const FileList: React.FC<FileListProps> = ({
     [currentEditId]
   )
 
-  const _onFileClick = (file: FileObject) => {
+  const _onFileClick = (file: FileObjectBeforeLoaded) => {
     if (currentEditId !== file.id && !file.isNew) {
       onFileClick(file.id)
     }
   }
-  const fileEdit = (file: FileObject) => {
+  const fileEdit = (file: FileObjectBeforeLoaded) => {
     if (currentEditId !== file.id) {
       setCurrentEditId(file.id)
       setValue(file.title)
