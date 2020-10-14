@@ -1,5 +1,5 @@
 import { hot } from 'react-hot-loader/root'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { v4 as uuid } from 'uuid'
 import SimpleMDE from 'react-simplemde-editor'
 import 'easymde/dist/easymde.min.css'
@@ -16,8 +16,9 @@ import {
 } from './utils/helper'
 import { deleteFile, readFile, renameFile, writeFile } from './utils/fileHelper'
 import path from 'path'
-import { remote, ipcRenderer } from 'electron'
+import { remote } from 'electron'
 import Store from 'electron-store'
+import { useIpcRenderer } from './hooks/useIpcRenderer'
 
 const fileStore = new Store<
   Record<'files', Record<string, FileObjectBeforeLoaded> | undefined>
@@ -258,15 +259,18 @@ function App() {
     }
   }
 
-  useEffect(() => {
-    const callback = () => {
-      console.log('hello from menu')
-    }
-    ipcRenderer.on('create-new-file', callback)
-    return () => {
-      ipcRenderer.off('create-new-file', callback)
-    }
-  }, [])
+  // listen for events coming from the main process
+  useIpcRenderer(
+    {
+      'create-new-file': createNewFile,
+      'save-edit-file': saveCurrentFile,
+      'search-file': () => {
+        console.log('searching file')
+      },
+      'import-file': importFiles,
+    },
+    [createNewFile, saveCurrentFile, importFiles]
+  )
 
   if (isFilesLoaded(openedFiles)) {
     return (
