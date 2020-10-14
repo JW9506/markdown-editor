@@ -4,6 +4,7 @@ import { faMarkdown } from '@fortawesome/free-brands-svg-icons'
 import { AnyFunction, FileObjectBeforeLoaded } from '../typings'
 import { useKeyPress } from '../hooks/useKeyPress'
 import { onClickCb } from '../utils/onClickCb'
+import { useContextMenu } from '../hooks/useContextMenu'
 
 export interface FileListProps {
   files: FileObjectBeforeLoaded[]
@@ -49,12 +50,35 @@ const FileList: React.FC<FileListProps> = ({
       onFileDelete(currentEditFile.id)
     }
   }, [currentEditFile])
+
+  useContextMenu([
+    {
+      label: 'Open',
+      click: () => {
+        console.log('clickng')
+      },
+    },
+    {
+      label: 'Rename',
+      click: () => {
+        console.log('renaming')
+      },
+    },
+    {
+      label: 'Delete',
+      click: () => {
+        console.log('Deleting')
+      },
+    },
+  ])
+
   // Watch on entering input state
   useEffect(() => {
     if (currentEditId) {
       inputRef.current?.focus()
     }
   }, [currentEditId])
+
   useEffect(() => {
     const newFile = files.find((file) => file.isNew)
     if (newFile) {
@@ -62,6 +86,7 @@ const FileList: React.FC<FileListProps> = ({
       setValue(newFile.title)
     }
   }, [files])
+
   // File name input state key handling
   useEffect(() => {
     if (escapePressed) {
