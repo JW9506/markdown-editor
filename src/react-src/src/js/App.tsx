@@ -41,6 +41,7 @@ function App() {
   const [openedFileIDs, setOpenedFileIDs] = useState<string[]>([])
   const [searchedFiles, setSearchedFiles] = useState<FileObject[]>([])
   const [unsavedFileIDs, setUnsavedFileIDs] = useState<string[]>([])
+  const [isNewfileBeingCreated, toggleNewfileBeingCreated] = useState(false)
   const fileObjArr = flattenedFileObjectCollectionToArr(files)
   const activeFile = files[activeFileID]
 
@@ -63,6 +64,8 @@ function App() {
   }
 
   const createNewFile = () => {
+    if (isNewfileBeingCreated) return
+    toggleNewfileBeingCreated(!isNewfileBeingCreated)
     const newID = uuid()
     files[newID] = {
       id: newID,
@@ -104,6 +107,7 @@ function App() {
         console.error(e)
       }
     }
+    toggleNewfileBeingCreated(!isNewfileBeingCreated)
   }
 
   const fileSearch = (keyWord: string) => {
