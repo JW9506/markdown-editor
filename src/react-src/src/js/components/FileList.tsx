@@ -51,11 +51,11 @@ const FileList: React.FC<FileListProps> = ({
     }
   }, [currentEditFile])
 
-  useContextMenu([
+  const clickedItem = useContextMenu([
     {
       label: 'Open',
       click: () => {
-        console.log('clickng')
+        console.log('clickng', clickedItem.current)
       },
     },
     {
@@ -70,7 +70,7 @@ const FileList: React.FC<FileListProps> = ({
         console.log('Deleting')
       },
     },
-  ])
+  ], '.FileList')
 
   // Watch on entering input state
   useEffect(() => {
