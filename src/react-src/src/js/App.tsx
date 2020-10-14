@@ -58,7 +58,7 @@ function App() {
   const saveCurrentFile = async () => {
     try {
       await writeFile(
-        path.join(saveLocation, `${activeFile.title}.md`),
+        path.join(activeFile.path, `${activeFile.title}.md`),
         activeFile.body ?? ''
       )
       setUnsavedFileIDs(unsavedFileIDs.filter((id) => id !== activeFile.id))
@@ -106,8 +106,8 @@ function App() {
     } else {
       try {
         await renameFile(
-          path.join(saveLocation, `${files[id].title}.md`),
-          path.join(saveLocation, `${title}.md`)
+          path.join(files[id].path, `${files[id].title}.md`),
+          path.join(files[id].path, `${title}.md`)
         )
         updateFileObjectField(id, keys, values)
       } catch (e) {
@@ -178,7 +178,7 @@ function App() {
   const fileDelete = async (fileId: string) => {
     try {
       if (files[fileId]?.title) {
-        await deleteFile(path.join(saveLocation, `${files[fileId].title}.md`))
+        await deleteFile(path.join(files[fileId].path, `${files[fileId].title}.md`))
       }
       setOpenedFileIDs(openedFileIDs.filter((id) => id !== fileId))
       delete files[fileId]
@@ -243,7 +243,6 @@ function App() {
         ...files,
         ...flattenFileObjectCollection(importFilesArr),
       }
-      // todo: load to the filelist
       setFiles(newFiles)
       saveFilesToStore(newFiles)
       if (importFilesArr.length) {
