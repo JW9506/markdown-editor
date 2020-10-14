@@ -78,7 +78,8 @@ const FileList: React.FC<FileListProps> = ({
         },
       },
     ],
-    '.FileList'
+    '.FileList',
+    [onFileClick, fileEdit, onFileDelete]
   )
 
   // Watch on entering input state

@@ -5,7 +5,8 @@ const { Menu, MenuItem } = remote
 
 export function useContextMenu(
   itemArr: MenuItemConstructorOptions[],
-  targetSelector: string
+  targetSelector: string,
+  deps: any[]
 ) {
   const clickedElement = useRef<HTMLElement | null>(null)
   useEffect(() => {
@@ -23,7 +24,6 @@ export function useContextMenu(
     }
     window.addEventListener('contextmenu', handleContextMenu)
     return () => window.removeEventListener('contextmenu', handleContextMenu)
-  // if don't require updates using [], may cause bug
-  })
+  }, deps)
   return clickedElement
 }
