@@ -1,3 +1,5 @@
+import { ipcMain } from 'electron'
+
 export default function menuTemplate(app: Electron.App, shell: Electron.Shell) {
   const template: any[] = [
     {
@@ -202,6 +204,14 @@ export default function menuTemplate(app: Electron.App, shell: Electron.Shell) {
         }
       )
     }
+  } else {
+    template[0].submenu.push({
+      label: 'Setting',
+      accelerator: 'CmdOrCtrl+.',
+      click: () => {
+        ipcMain.emit('open-setting-window')
+      },
+    })
   }
 
   return template

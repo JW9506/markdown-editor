@@ -1,32 +1,40 @@
-import {
-  app,
-  BrowserWindow,
-  ipcMain,
-  Menu,
-  Notification,
-  shell,
-} from 'electron'
-import path from 'path'
-import isDev from 'electron-is-dev'
+import { app, ipcMain, Menu, shell } from 'electron'
 import menuTemplate from './menuTemplate'
-const REACT_PORT = 3123
+import AppWindow from './AppWindow'
 
-let win: BrowserWindow
 app.allowRendererProcessReuse = false
+
+let mainWindow: AppWindow | null, settingsWindow: AppWindow | null
+
 app.on('ready', () => {
-  win = new BrowserWindow({
-    width: 300,
-    height: 300,
-    webPreferences: {
-      nodeIntegration: true,
-      enableRemoteModule: true,
+  mainWindow = new AppWindow(
+    {
+      width: 1440,
+      height: 768,
     },
+    'main'
+  )
+  mainWindow.on('close', () => {
+    settingsWindow = null
+    mainWindow = null
   })
-  if (isDev) {
-    win.loadURL(`http://localhost:${REACT_PORT}`)
-  } else {
-    // win.loadFile(path.resolve(__dirname, 'index.html'))
-  }
+  ipcMain.on('open-setting-window', () => {
+    if (mainWindow) {
+      settingsWindow = new AppWindow(
+        {
+          width: 500,
+          height: 400,
+          parent: mainWindow,
+        },
+        'settings'
+      )
+      settingsWindow.removeMenu()
+      settingsWindow.on('close', () => {
+        settingsWindow = null
+      })
+    }
+  })
+
   const menu = Menu.buildFromTemplate(menuTemplate(app, shell))
   Menu.setApplicationMenu(menu)
   handleIPC()

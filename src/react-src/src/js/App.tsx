@@ -19,6 +19,7 @@ import path from 'path'
 import { remote } from 'electron'
 import Store from 'electron-store'
 import { useIpcRenderer } from './hooks/useIpcRenderer'
+import { Link } from 'react-router-dom'
 
 const fileStore = new Store<
   Record<'files', Record<string, FileObjectBeforeLoaded> | undefined>
