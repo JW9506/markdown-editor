@@ -2,15 +2,34 @@
   "name": "markdown-editor",
   "version": "1.0.0",
   "license": "MIT",
+  "author": {
+    "name": "Jayden Wong",
+    "email": "cf.dota@gmail.com"
+  },
   "main": "src/js-out/main",
   "scripts": {
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "start:tsc": "tsc -w",
     "start:render": "cd ./src/react-src && yarn start",
     "start:main": "wait-on -i 1000 http://localhost:3123 && electron .",
-    "start": "concurrently -k \"yarn:start:*\""
+    "start": "concurrently -k \"yarn:start:*\"",
+    "dist": "electron-builder --win --x64",
+    "dist:dir": "rimraf dist/ && yarn dist --dir",
+    "build:render": "cd ./src/react-src && yarn build"
   },
-  "dependencies": {},
+  "build": {
+    "appId": "Markdown App",
+    "productName": "Markdown Editor",
+    "files": [
+      "package.json",
+      "./src/js-out/**/*",
+      "./src/react-src/dist/**/*"
+    ],
+    "copyright": "Copyright © 2020 ${author}"
+  },
+  "dependencies": {
+    "electron-is-dev": "^1.2.0"
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
@@ -18,7 +37,6 @@
     "devtron": "^1.4.0",
     "electron": "10.1.3",
     "electron-builder": "^22.9.1",
-    "electron-is-dev": "^1.2.0",
     "electron-store": "^6.0.1",
     "nodemon": "^2.0.4",
     "typescript": "4.0.3",

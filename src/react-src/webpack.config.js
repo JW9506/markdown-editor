@@ -5,7 +5,7 @@ const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const webpack = require('webpack')
 const path = require('path')
-const publicURLRoot = '/'
+const publicURLRoot = '../' // fix electron relative path
 const SPATitle = 'Markdown Editor'
 
 module.exports = (_, { mode = 'production' }) => {
