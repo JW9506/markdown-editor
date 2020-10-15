@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { remote } from 'electron'
 import Store from 'electron-store'
 const settingStore = new Store<Record<'saveLocation', string | undefined>>({
@@ -20,6 +20,12 @@ const Settings: React.FC = () => {
     settingStore.set('saveLocation', saveLocation)
     remote.getCurrentWindow().close()
   }
+  const saveLocationOnChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSaveLocation(e.target.value)
+    },
+    []
+  )
   return (
     <div className="Settings p-8 bg-gray-200 min-h-screen">
       <h1>Setting</h1>
@@ -29,6 +35,7 @@ const Settings: React.FC = () => {
           placeholder="Current Location"
           className="form-control"
           value={saveLocation}
+          onChange={saveLocationOnChange}
         />
         <button id="browse-btn" className="btn btn-primary" onClick={Browser}>
           Browse
