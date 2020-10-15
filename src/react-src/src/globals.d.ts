@@ -8,7 +8,7 @@ declare module '*.less' {
   export default src
 }
 
-type ObjectKeys<T> = T extends object
+type ObjectKeys<T> = T extends Record<string, any>
   ? (keyof T)[]
   : T extends number
   ? []
