@@ -37,9 +37,4 @@ app.on('ready', () => {
 
   const menu = Menu.buildFromTemplate(menuTemplate(app, shell))
   Menu.setApplicationMenu(menu)
-  handleIPC()
 })
-
-function handleIPC() {
-  //
-}
