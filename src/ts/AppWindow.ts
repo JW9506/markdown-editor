@@ -6,7 +6,7 @@ const MAIN_WIN_REACT_PORT = 3123
 const DEVELOPMENT_RENDERER_URL = `http://localhost:${MAIN_WIN_REACT_PORT}`
 const PRODUCTION_RENDERER_URL = `file://${path.join(
   __dirname,
-  '../react-src/dist/'
+  '../react-src/dist/index.html'
 )}`
 
 type WindowType = 'main' | 'settings'
@@ -29,10 +29,10 @@ export default class AppWindow extends BrowserWindow {
     if (isDev) {
       switch (type) {
         case 'main':
-          this.loadURL(DEVELOPMENT_RENDERER_URL + '/')
+          this.loadURL(DEVELOPMENT_RENDERER_URL)
           break
         case 'settings':
-          this.loadURL(DEVELOPMENT_RENDERER_URL + '/#/settings')
+          this.loadURL(DEVELOPMENT_RENDERER_URL + '#/settings')
           break
         default:
           break
@@ -40,10 +40,10 @@ export default class AppWindow extends BrowserWindow {
     } else {
       switch (type) {
         case 'main':
-          this.loadURL(PRODUCTION_RENDERER_URL + '/')
+          this.loadURL(PRODUCTION_RENDERER_URL)
           break
         case 'settings':
-          this.loadURL(PRODUCTION_RENDERER_URL + '/#/settings')
+          this.loadURL(PRODUCTION_RENDERER_URL + '#/settings')
           break
         default:
           break
