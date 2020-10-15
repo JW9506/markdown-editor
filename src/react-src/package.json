@@ -24,6 +24,7 @@
     "bootstrap": "^5.0.0-alpha2",
     "clsx": "^1.1.1",
     "core-js": "^3.6.5",
+    "cross-env": "^7.0.2",
     "css-loader": "^4.3.0",
     "eslint": "^7.11.0",
     "eslint-config-airbnb-base": "^14.2.0",
@@ -65,8 +66,9 @@
   },
   "scripts": {
     "lint": "eslint . --ext js,jsx,ts,tsx",
-    "build": "rm -rf dist/ && webpack",
-    "build:tw": "tailwind build src/js/styles/_tailwind.css -o src/js/styles/tailwind.css",
+    "build": "rm -rf dist/ && yarn build:tw:prod && webpack",
+    "build:tw:dev": "tailwind build src/js/styles/_tailwind.css -o src/js/styles/tailwind.css",
+    "build:tw:prod": "cross-env NODE_ENV=production tailwind build src/js/styles/_tailwind.css -o src/js/styles/tailwind.css",
     "start": "webpack serve --port 3123 --mode development"
   }
 }
