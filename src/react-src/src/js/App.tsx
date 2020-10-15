@@ -190,14 +190,15 @@ function App() {
           path.join(files[fileId].path, `${files[fileId].title}.md`)
         )
       }
+    } catch (e) {
+      console.error(e)
+    } finally {
       setOpenedFileIDs(openedFileIDs.filter((id) => id !== fileId))
       delete files[fileId]
       setFiles({ ...files })
       saveFilesToStore(files)
       // close the tab if opened
       tabClose(fileId)
-    } catch (e) {
-      console.error(e)
     }
   }
 
