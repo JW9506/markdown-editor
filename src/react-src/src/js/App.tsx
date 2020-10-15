@@ -19,8 +19,10 @@ import path from 'path'
 import { remote } from 'electron'
 import Store from 'electron-store'
 import { useIpcRenderer } from './hooks/useIpcRenderer'
-import { Link } from 'react-router-dom'
 
+const settingStore = new Store<Record<'saveLocation', string | undefined>>({
+  name: 'Settings',
+})
 const fileStore = new Store<
   Record<'files', Record<string, FileObjectBeforeLoaded> | undefined>
 >({
@@ -51,11 +53,13 @@ function App() {
   const fileObjArr = flattenedFileObjectCollectionToArr(files)
   const activeFile = files[activeFileID]
 
-  const saveLocation = path.join(
-    remote.app.getPath('home'),
-    '_tempfiles',
-    'electron_md_notepad_cache'
-  )
+  const saveLocation =
+    settingStore.get('saveLocation') ??
+    path.join(
+      remote.app.getPath('home'),
+      '_tempfiles',
+      'electron_md_notepad_cache'
+    )
 
   const saveCurrentFile = async () => {
     try {
