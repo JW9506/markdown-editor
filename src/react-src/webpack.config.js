@@ -6,7 +6,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const webpack = require('webpack')
 const path = require('path')
 const publicURLRoot = '/'
-const SPATitle = require('../../package.json')['name']
+const SPATitle = 'Markdown Editor'
 
 module.exports = (_, { mode = 'production' }) => {
   const isProduction = mode === 'production'
