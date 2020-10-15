@@ -25,7 +25,23 @@
       "./src/js-out/**/*",
       "./src/react-src/dist/**/*"
     ],
-    "copyright": "Copyright © 2020 ${author}"
+    "directories": {
+      "buildResources": "src/assets"
+    },
+    "copyright": "Copyright © 2020 ${author}",
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "src/assets/icon.ico",
+      "artifactName": "${productName}-Web-Setup-${version}-.${ext}",
+      "publisherName": "Jayden Wong"
+    },
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false,
+      "perMachine": false
+    }
   },
   "dependencies": {
     "electron-is-dev": "^1.2.0"
