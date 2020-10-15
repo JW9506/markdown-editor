@@ -50,7 +50,7 @@ const FileList: React.FC<FileListProps> = ({
     if (currentEditFile?.isNew) {
       onFileDelete(currentEditFile.id)
     }
-  }, [currentEditFile])
+  }, [currentEditFile, onFileDelete])
 
   // right click context
   const clickedItem = useContextMenu(

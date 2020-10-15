@@ -193,6 +193,7 @@ function App() {
     } catch (e) {
       console.error(e)
     } finally {
+      toggleNewfileBeingCreated(false)
       setOpenedFileIDs(openedFileIDs.filter((id) => id !== fileId))
       delete files[fileId]
       setFiles({ ...files })
