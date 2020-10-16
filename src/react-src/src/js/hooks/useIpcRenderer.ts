@@ -19,7 +19,7 @@ export function useIpcRenderer(
     })
     return () => {
       Object.keys(cbMap).forEach((key) => {
-        if (cbMap[key]) ipcRenderer.off(key, cbMap[key]!)
+        if (cbMap[key]) ipcRenderer.removeListener(key, cbMap[key]!)
       })
     }
   }, deps)
