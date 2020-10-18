@@ -121,7 +121,8 @@ module.exports = (_, { mode = 'production' }) => {
         return assetFilename.endsWith('.js')
       },
     },
-    devtool: isProduction ? 'source-map' : 'eval-source-map',
+    devtool: 'eval-source-map',
   }
+  isProduction && delete config['devtool']
   return config
 }
