@@ -69,6 +69,7 @@
     "build": "rm -rf dist/ && yarn build:tw:prod && webpack",
     "build:tw:dev": "tailwind build src/js/styles/_tailwind.css -o src/js/styles/tailwind.css",
     "build:tw:prod": "cross-env NODE_ENV=production tailwind build src/js/styles/_tailwind.css -o src/js/styles/tailwind.css",
-    "start": "webpack serve --port 3123 --mode development"
+    "dev": "webpack serve --port 3123 --mode development",
+    "start": "yarn build:tw:dev && yarn dev"
   }
 }
