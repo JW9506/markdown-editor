@@ -3,3 +3,6 @@
 ### screen shot
 
 ![image](https://i.ibb.co/XZnW3dg/Screenshot-9.jpg)
+
+### To compile
+`yarn build:render && yarn dist`

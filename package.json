@@ -6,7 +6,7 @@
     "name": "Jayden Wong",
     "email": "cf.dota@gmail.com"
   },
-  "main": "src/js-out/main",
+  "main": "src/js-out/main.js",
   "scripts": {
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "start:tsc": "tsc -w",
