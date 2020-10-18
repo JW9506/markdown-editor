@@ -67,6 +67,7 @@
   "scripts": {
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "build": "rm -rf dist/ && yarn build:tw:prod && webpack",
+    "build:dev": "rm -rf dist/ && yarn build:tw:dev && webpack --mode development",
     "build:tw:dev": "tailwind build src/js/styles/_tailwind.css -o src/js/styles/tailwind.css",
     "build:tw:prod": "cross-env NODE_ENV=production tailwind build src/js/styles/_tailwind.css -o src/js/styles/tailwind.css",
     "dev": "webpack serve --port 3123 --mode development",

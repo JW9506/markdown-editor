@@ -28,7 +28,13 @@ module.exports = (_, { mode = 'production' }) => {
   const config = {
     target: 'electron-renderer',
     mode,
-    entry: ['react-hot-loader/patch', './src/js/index.tsx'],
+    entry: {
+      // HtmlWebpackPlugin.chunks control which chunk to load in a specific html entry
+      main: ['react-hot-loader/patch', './src/js/index.tsx'],
+      'react-lib': ['react'],
+      electronStore: ['electron-store'],
+      simplemde: ['react-simplemde-editor'],
+    },
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: 'js/[name].[fullhash:10].js',
